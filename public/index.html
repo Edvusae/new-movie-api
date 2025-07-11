@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Movie Collection</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>My Movie Collection</h1>
+    </header>
+
+    <main>
+        <section id="add-movie">
+            <h2>Add New Movie</h2>
+            <form id="movie-form">
+                <input type="text" id="title" placeholder="Title" required>
+                <input type="text" id="director" placeholder="Director" required>
+                <input type="number" id="year" placeholder="Year" required>
+                <button type="submit">Add Movie</button>
+            </form>
+        </section>
+
+        <section id="movie-list">
+            <h2>All Movies</h2>
+            <div id="movies-container">
+                <p>Loading movies...</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 My Movie Collection</p>
+    </footer>
+
+    <script src="script.js"></script> </body>
+</html>s
