@@ -46,7 +46,7 @@ mongoose.connect(MONGODB_URI)
 // and before the app.listen if it's placed outside the .then() block.
 // However, in this corrected version, app.listen is inside .then(), so routes
 // should logically follow the model definition.
-/*
+
 // (Rest of your server.js, including mongoose connection and Movie Schema/Model definitions)
 
 app.post('/movies', async (req, res) => { // Made async - Correct!
@@ -81,8 +81,7 @@ app.post('/movies', async (req, res) => { // Made async - Correct!
 });
 
 // (Rest of your server.js, including mongoose connection, Movie Schema/Model definitions, and the refactored POST route)
-
-/* --- Corrected GET /movies route ---
+///--- Corrected GET /movies route ---
 app.get('/movies', async (req, res) => { // Made async - Correct!
     try {
         // Correction 1: Movie.find() should be called without arguments to get all movies.
@@ -132,7 +131,6 @@ app.get('/movies/:id', async (req, res) => {
 // (Your existing PUT and DELETE routes are below this and will be refactored later)
 
 // ... and so on for PUT and DELETE
-*/
 
 // --- REMOVE THIS EXTRA app.listen CALL ---
 // app.listen(port, () => {

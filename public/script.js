@@ -152,5 +152,5 @@ async function handleDelete(event) {
 
 // Add a function to handle updating a movie by ID
 async function updateMovieById(movieId, updatedData) { 
-    c
+    
 }
