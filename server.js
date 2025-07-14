@@ -43,7 +43,6 @@ mongoose.connect(MONGODB_URI)
     });
 
 // Your API Routes (POST, GET, PUT, DELETE) will go here after the Mongoose model is defined
-// (Rest of your server.js, including mongoose connection and Movie Schema/Model definitions)
 
 app.post('/movies', async (req, res) => { // Made async - Correct!
     try {
@@ -126,6 +125,32 @@ app.get('/movies/:id', async (req, res) => {
 
 // (Your existing PUT and DELETE routes are below this and will be refactored later)
 
+app.put('/movies/:id', async (req, res) => {
+    try {
+        console.log(`PUT /movies/${req.params.id} requested.`);
+        const { title, director, year } = req.body;
+
+        // Validate input
+        if (!title || !director || !year) {
+            return res.status(400).send('Title, director, and year are required');
+        }
+
+        // Find and update the movie
+        const updatedMovie = await Movie.findByIdAndUpdate(
+            req.params.id,
+            { title, director, year },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedMovie) {
+            return res.status(404).send('Movie not found');
+        }
+
+        res.json(updatedMovie);
+    } catch (error) {
+        console.error('Error updating movie:', error);
+        res.status(500).send('An error occurred while updating the movie');
+    }
 // ... and so on for PUT and DELETE
 
 // --- REMOVE THIS EXTRA app.listen CALL ---
