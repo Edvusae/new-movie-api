@@ -7,16 +7,18 @@ const port = 3000;
 // MongoDB connection string (make sure credentials are correct and not exposed in production)
 const MONGODB_URI = 'mongodb+srv://edwin:lMH142vD0BJ7pWR1@cluster0.rsn9cvd.mongodb.net/?retryWrites=true&w=majority';
 
-app.use(express.json());
-app.use(express.static('public')); // Serves your static HTML, CSS, JS files
+app.use(express.json()); // Middleware to parse JSON request bodies
+app.use(express.static('public')); // Serves your static HTML, CSS, JS files from the 'public' directory 
 
 // Define Movie Schema and Model
-const movieSchema = new mongoose.Schema({
-    title: { type: String, required: true },
-    director: { type: String, required: true },
-    year: { type: Number, required: true }
+const movieSchema = new mongoose.Schema({ // Schema definition
+    title: { type: String, required: true }, // Title of the movie
+    director: { type: String, required: true }, //  Director of the movie
+    year: { type: Number, required: true } // Year of release
 });
-const Movie = mongoose.model('Movie', movieSchema);
+
+// Create the Movie model using the schema
+const Movie = mongoose.model('Movie', movieSchema); // Create the Movie model
 
 // Establish MongoDB connection
 mongoose.connect(MONGODB_URI)
@@ -32,16 +34,19 @@ mongoose.connect(MONGODB_URI)
             console.log(` - DELETE /movies/:id: Delete a movie by ID`);
         });
     })
-    .catch((error) => {
+    .catch((error) => { // Handle connection errors
+        // Log the error and exit the process
         console.error('Error connecting to MongoDB:', error);
         process.exit(1);
     });
 
 // --- POST /movies route (Create a new movie) ---
+// This route handles the creation of a new movie
+
 app.post('/movies', async (req, res) => {
     try {
         console.log(`POST /movies requested.`);
-        const { title, director, year } = req.body;
+        const { title, director, year } = req.body; // Destructure the request body to get title, director, and year
 
         // Validation: match frontend
         if (
@@ -55,7 +60,7 @@ app.post('/movies', async (req, res) => {
             return res.status(400).json({ message: 'Title and director are required, year must be a valid number.' });
         }
 
-        const newMovie = new Movie({ title, director, year });
+        const newMovie = new Movie({ title, director, year }); // Create a new movie instance using the Movie model
         const savedMovie = await newMovie.save();
         res.status(201).json(savedMovie);
 
