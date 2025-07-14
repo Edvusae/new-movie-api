@@ -44,7 +44,7 @@ mongoose.connect(MONGODB_URI)
 
 // Your API Routes (POST, GET, PUT, DELETE) will go here after the Mongoose model is defined
 // ---- Context: PUT /movies route ----
-app.put('/movies/:id', async (req, res) => {
+app.post('/movies', async (req, res) => { // Made async - Correct!
     try {
         console.log(`PUT /movies/${req.params.id} requested.`); // Log the request for debugging    
         const { title, director, year } = req.body; // Destructure the request body to get title, director, and year
