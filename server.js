@@ -43,14 +43,15 @@ mongoose.connect(MONGODB_URI)
     });
 
 // Your API Routes (POST, GET, PUT, DELETE) will go here after the Mongoose model is defined
-
-app.post('/movies', async (req, res) => { // Made async - Correct!
+// ---- Context: PUT /movies route ----
+app.put('/movies/:id', async (req, res) => {
     try {
-        // Correction 1: Uncomment and ensure req.body destructuring is active
-        const { title, director, year } = req.body;
+        console.log(`PUT /movies/${req.params.id} requested.`); // Log the request for debugging    
+        const { title, director, year } = req.body; // Destructure the request body to get title, director, and year
 
-        // Keep your validation - Correct!
+        // Check if all required fields are provided
         if (!title || !director || !year) {
+            // If any field is missing, return a 400 Bad Request response
             return res.status(400).send('Title, director, and year are required');
         }
 
