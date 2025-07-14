@@ -22,6 +22,7 @@ const movieSchema = new mongoose.Schema({
 const Movie = mongoose.model('Movie', movieSchema);
 
 // Establish MongoDB connection
+// It's important to connect to the database before defining routes that use the Movie model.
 mongoose.connect(MONGODB_URI)
     .then(() => {
         console.log('Connected to MongoDB!');
@@ -42,11 +43,8 @@ mongoose.connect(MONGODB_URI)
         process.exit(1);
     });
 
-// server.js (All the code you have above this is correct and should remain)
-
-// Your API Routes (POST, GET, PUT, DELETE) will go here
-
 // --- POST /movies route (Create a new movie) ---
+
 app.post('/movies', async (req, res) => {
     try {
         console.log(`POST /movies requested.`);
@@ -72,6 +70,7 @@ app.post('/movies', async (req, res) => {
 });
 
 // --- GET /movies route (Get all movies) ---
+
 app.get('/movies', async (req, res) => {
     try {
         const allMovies = await Movie.find();
@@ -84,6 +83,8 @@ app.get('/movies', async (req, res) => {
 });
 
 // --- GET /movies/:id route (Get a movie by ID) ---
+// This route allows you to fetch a specific movie by its ID.
+
 app.get('/movies/:id', async (req, res) => {
     try {
         console.log(`GET /movies/${req.params.id} requested.`);
@@ -101,10 +102,12 @@ app.get('/movies/:id', async (req, res) => {
 });
 
 // --- PUT /movies/:id route (Update an existing movie) ---
+// This route allows you to update an existing movie by its ID.
+
 app.put('/movies/:id', async (req, res) => {
     try {
         console.log(`PUT /movies/${req.params.id} requested.`);
-        const { title, director, year } = req.body;
+        const { title, director, year } = req.body; // Destructure the request body
 
         if (!title || !director || !year) {
             return res.status(400).send('Title, director, and year are required');
@@ -128,6 +131,8 @@ app.put('/movies/:id', async (req, res) => {
 });
 
 // This route allows you to delete a movie by its ID.
+// It uses the DELETE HTTP method to remove a movie from the database.
+
 app.delete('/movies/:id', async (req, res) => {
     try {
         console.log(`DELETE /movies/${req.params.id} requested.`);
