@@ -1,41 +1,47 @@
-// server.js
+// server.js (Simplified view, assuming other parts are already correct)
 
-// Import necessary modules
-require('dotenv').config(); // Load environment variables from .env file
+require('dotenv').config(); // Make sure this is at the very top
 
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
-const port = 3000; // You could even make this an env variable, e.g., process.env.PORT || 3000
+const port = process.env.PORT || 3000; // Good practice: use PORT from .env or default to 3000
 
-// Now, get your MONGODB_URI from process.env
+// --- This is the key change in server.js: Import your movie routes ---
+const movieRoutes = require('./routes/movieRoutes'); // Correct path to your new routes file
+
 const MONGODB_URI = process.env.MONGODB_URI;
 
-// Check if MONGODB_URI is loaded (good for debugging)
 if (!MONGODB_URI) {
     console.error('Error: MONGODB_URI is not defined in your .env file or environment variables.');
-    process.exit(1); // Exit the process if critical env variable is missing
+    process.exit(1);
 }
 
-app.use(express.json()); // Middleware to parse JSON bodies
+app.use(express.json());
 app.use(express.static('public'));
-// Define Movie Schema and Model
-const movieSchema = new mongoose.Schema({ // Schema definition
-    title: { type: String, required: true }, // Title of the movie
-    director: { type: String, required: true }, //  Director of the movie
-    year: { type: Number, required: true } // Year of release
-});
 
-// Create the Movie model using the schema
-const Movie = mongoose.model('Movie', movieSchema); // Create the Movie model
+// --- Crucial Step: Tell Express to use your movie routes for the /movies base path ---
+app.use('/movies', movieRoutes); // All requests starting with /movies will be handled by movieRoutes
+
+// IMPORTANT: Ensure your Movie Schema and Model definition is removed from server.js
+// if it's now defined exclusively in movieRoutes.js, to avoid re-declaration errors.
+// If you still need the Movie model directly in server.js for some reason,
+// you would typically define it in a separate 'models' folder and import it into both server.js and movieRoutes.js.
+// For simplicity in this case, defining it in movieRoutes.js and removing it from server.js is fine.
+
 
 // Establish MongoDB connection
-mongoose.connect(MONGODB_URI) // Connect to MongoDB using the URI from environment variables
+mongoose.connect(MONGODB_URI)
     .then(() => {
         console.log('Connected to MongoDB!');
         app.listen(port, () => {
             console.log(`SERVER IS RUNNING: http://localhost:${port}`);
-            // ... (your existing endpoint logs)
+            console.log('Endpoints:');
+            console.log(` - POST /movies: Create a new movie`);
+            console.log(` - GET /movies: Get all movies`);
+            console.log(` - GET /movies/:id: Get a movie by ID`);
+            console.log(` - PUT /movies/:id: Update an existing movie`);
+            console.log(` - DELETE /movies/:id: Delete a movie by ID`);
         });
     })
     .catch((error) => {
@@ -43,114 +49,4 @@ mongoose.connect(MONGODB_URI) // Connect to MongoDB using the URI from environme
         process.exit(1);
     });
 
-// --- POST /movies route (Create a new movie) ---
-// This route handles the creation of a new movie
-
-app.post('/movies', async (req, res) => {
-    try {
-        console.log(`POST /movies requested.`);
-        const { title, director, year } = req.body; // Destructure the request body to get title, director, and year
-
-        // Validation: match frontend
-        if (
-            !title ||
-            !director ||
-            typeof year !== 'number' ||
-            isNaN(year) ||
-            year < 1800 ||
-            year > new Date().getFullYear() + 5
-        ) {
-            return res.status(400).json({ message: 'Title and director are required, year must be a valid number.' });
-        }
-
-        const newMovie = new Movie({ title, director, year }); // Create a new movie instance using the Movie model
-        const savedMovie = await newMovie.save();
-        res.status(201).json(savedMovie);
-
-    } catch (error) {
-        console.error('Error creating movie:', error);
-        res.status(500).json({ message: 'An error occurred while creating the movie' });
-    }
-});
-
-// --- GET /movies route (Get all movies) ---
-app.get('/movies', async (req, res) => {
-    try {
-        const allMovies = await Movie.find();
-        console.log(`GET /movies requested: Sending ${allMovies.length} movies.`);
-        res.json(allMovies);
-    } catch (error) {
-        console.error('Error fetching all movies:', error);
-        res.status(500).json({ message: 'An error occurred while fetching movies' });
-    }
-});
-
-// --- GET /movies/:id route (Get a movie by ID) ---
-app.get('/movies/:id', async (req, res) => {
-    try {
-        console.log(`GET /movies/${req.params.id} requested.`);
-        const foundMovie = await Movie.findById(req.params.id);
-
-        if (foundMovie) {
-            res.json(foundMovie);
-        } else {
-            res.status(404).json({ message: 'Movie not found' });
-        }
-    } catch (error) {
-        console.error('Error fetching movie by ID:', error);
-        res.status(500).json({ message: 'An error occurred while fetching the movie' });
-    }
-});
-
-// --- PUT /movies/:id route (Update an existing movie) ---
-app.put('/movies/:id', async (req, res) => {
-    try {
-        console.log(`PUT /movies/${req.params.id} requested.`);
-        const { title, director, year } = req.body;
-
-        // Validation: match frontend
-        if (
-            !title ||
-            !director ||
-            typeof year !== 'number' ||
-            isNaN(year) ||
-            year < 1800 ||
-            year > new Date().getFullYear() + 5
-        ) {
-            return res.status(400).json({ message: 'Title and director are required, year must be a valid number.' });
-        }
-
-        const updatedMovie = await Movie.findByIdAndUpdate(
-            req.params.id,
-            { title, director, year },
-            { new: true, runValidators: true }
-        );
-
-        if (!updatedMovie) {
-            return res.status(404).json({ message: 'Movie not found' });
-        }
-
-        res.json(updatedMovie);
-    } catch (error) {
-        console.error('Error updating movie:', error);
-        res.status(500).json({ message: 'An error occurred while updating the movie' });
-    }
-});
-
-// --- DELETE /movies/:id route (Delete a movie by ID) ---
-app.delete('/movies/:id', async (req, res) => {
-    try {
-        console.log(`DELETE /movies/${req.params.id} requested.`);
-        const deletedMovie = await Movie.findByIdAndDelete(req.params.id);
-
-        if (!deletedMovie) {
-            return res.status(404).json({ message: 'Movie not found' });
-        }
-
-        res.json(deletedMovie);
-
-    } catch (error) {
-        console.error('Error deleting movie:', error);
-        res.status(500).json({ message: 'An error occurred while deleting the movie' });
-    }
-});
+// All your API route handlers should now be gone from server.js
