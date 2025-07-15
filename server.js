@@ -1,15 +1,24 @@
 // server.js
+
+// Import necessary modules
+require('dotenv').config(); // Load environment variables from .env file
+
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
-const port = 3000;
+const port = 3000; // You could even make this an env variable, e.g., process.env.PORT || 3000
 
-// MongoDB connection string (make sure credentials are correct and not exposed in production)
-const MONGODB_URI = 'mongodb+srv://edwin:lMH142vD0BJ7pWR1@cluster0.rsn9cvd.mongodb.net/?retryWrites=true&w=majority';
+// Now, get your MONGODB_URI from process.env
+const MONGODB_URI = process.env.MONGODB_URI;
 
-app.use(express.json()); // Middleware to parse JSON request bodies
-app.use(express.static('public')); // Serves your static HTML, CSS, JS files from the 'public' directory 
+// Check if MONGODB_URI is loaded (good for debugging)
+if (!MONGODB_URI) {
+    console.error('Error: MONGODB_URI is not defined in your .env file or environment variables.');
+    process.exit(1); // Exit the process if critical env variable is missing
+}
 
+app.use(express.json());
+app.use(express.static('public'));
 // Define Movie Schema and Model
 const movieSchema = new mongoose.Schema({ // Schema definition
     title: { type: String, required: true }, // Title of the movie
@@ -26,16 +35,10 @@ mongoose.connect(MONGODB_URI)
         console.log('Connected to MongoDB!');
         app.listen(port, () => {
             console.log(`SERVER IS RUNNING: http://localhost:${port}`);
-            console.log('Endpoints:');
-            console.log(` - POST /movies: Create a new movie`);
-            console.log(` - GET /movies: Get all movies`);
-            console.log(` - GET /movies/:id: Get a movie by ID`);
-            console.log(` - PUT /movies/:id: Update an existing movie`);
-            console.log(` - DELETE /movies/:id: Delete a movie by ID`);
+            // ... (your existing endpoint logs)
         });
     })
-    .catch((error) => { // Handle connection errors
-        // Log the error and exit the process
+    .catch((error) => {
         console.error('Error connecting to MongoDB:', error);
         process.exit(1);
     });
