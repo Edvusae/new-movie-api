@@ -82,7 +82,7 @@ async function handleAddMovie(event) {
     }
 
     try {
-        const response = await fetch(`${API_BASE}/movies`, {
+        const response = await fetch(`${API_BASE}/movies`, { // Make a POST request to the API
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json' // Tell the server we're sending JSON
@@ -152,11 +152,12 @@ async function handleEdit(event) {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const movieToEdit = await response.json();
+        const movieToEdit = await response.json(); // Parse the JSON response
 
         // Populate the form fields with the fetched movie's data
-        titleInput.value = movieToEdit.title;
-        directorInput.value = movieToEdit.director;
+        titleInput.value = movieToEdit.title; // Set the title input
+        directorInput.value = movieToEdit.director; // Set the director input
+        // Convert year to string for input compatibility
         yearInput.value = movieToEdit.year;
         movieIdInput.value = movieToEdit._id; // Store the movie's _id in the hidden input
 

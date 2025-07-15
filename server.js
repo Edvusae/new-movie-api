@@ -17,7 +17,7 @@ if (!MONGODB_URI) {
     process.exit(1); // Exit the process if critical env variable is missing
 }
 
-app.use(express.json());
+app.use(express.json()); // Middleware to parse JSON bodies
 app.use(express.static('public'));
 // Define Movie Schema and Model
 const movieSchema = new mongoose.Schema({ // Schema definition
@@ -30,7 +30,7 @@ const movieSchema = new mongoose.Schema({ // Schema definition
 const Movie = mongoose.model('Movie', movieSchema); // Create the Movie model
 
 // Establish MongoDB connection
-mongoose.connect(MONGODB_URI)
+mongoose.connect(MONGODB_URI) // Connect to MongoDB using the URI from environment variables
     .then(() => {
         console.log('Connected to MongoDB!');
         app.listen(port, () => {
