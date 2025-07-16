@@ -1,14 +1,15 @@
-// server.js (Simplified view, assuming other parts are already correct)
+// server.js
 
-require('dotenv').config(); // Make sure this is at the very top
+require('dotenv').config();
 
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
-const port = process.env.PORT || 3000; // Good practice: use PORT from .env or default to 3000
+const port = process.env.PORT || 3000;
 
-// --- This is the key change in server.js: Import your movie routes ---
-const movieRoutes = require('./routes/movieRoutes'); // Correct path to your new routes file
+const movieRoutes = require('./routes/movieRoutes');
+// --- Import your new error handling middleware ---
+const errorHandler = require('./middleware/errorHandler');
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -20,15 +21,10 @@ if (!MONGODB_URI) {
 app.use(express.json());
 app.use(express.static('public'));
 
-// --- Crucial Step: Tell Express to use your movie routes for the /movies base path ---
-app.use('/movies', movieRoutes); // All requests starting with /movies will be handled by movieRoutes
+app.use('/movies', movieRoutes);~
 
-// IMPORTANT: Ensure your Movie Schema and Model definition is removed from server.js
-// if it's now defined exclusively in movieRoutes.js, to avoid re-declaration errors.
-// If you still need the Movie model directly in server.js for some reason,
-// you would typically define it in a separate 'models' folder and import it into both server.js and movieRoutes.js.
-// For simplicity in this case, defining it in movieRoutes.js and removing it from server.js is fine.
-
+// --- IMPORTANT: Add error handling middleware LAST ---
+app.use(errorHandler); // This will catch any errors passed via next(error)
 
 // Establish MongoDB connection
 mongoose.connect(MONGODB_URI)
@@ -48,5 +44,3 @@ mongoose.connect(MONGODB_URI)
         console.error('Error connecting to MongoDB:', error);
         process.exit(1);
     });
-
-// All your API route handlers should now be gone from server.js

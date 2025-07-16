@@ -1,5 +1,5 @@
 // validation/movieValidation.js
-
+// This file contains validation logic for movie data.
 const { body, param, validationResult } = require('express-validator');
 
 // Validation rules for creating a movie (used by POST)
