@@ -28,18 +28,16 @@ router.post('/', createMovieValidation, validate, async (req, res, next) => {
     }
 });
 
-// GET /movies: Get all movies with optional search/filter
+// GET /movies: Get all movies with optional search/filter/sort
 router.get('/', async (req, res, next) => {
     try {
-        const { search } = req.query; // Extract the 'search' query parameter
+        const { search, sort, order } = req.query; // Extract search, sort, and order parameters
 
         let filter = {}; // Initialize an empty filter object
+        let sortOptions = {}; // Initialize an empty sort options object
 
-        // If a search query is provided, build the filter
+        // Build the filter based on 'search'
         if (search) {
-            // Use Mongoose's $or operator to search in 'title' or 'director' fields
-            // $regex: for pattern matching
-            // $options: 'i' for case-insensitive search
             filter = {
                 $or: [
                     { title: { $regex: search, $options: 'i' } },
@@ -48,8 +46,19 @@ router.get('/', async (req, res, next) => {
             };
         }
 
-        const allMovies = await Movie.find(filter); // Apply the filter to the find operation
-        console.log(`GET /movies requested: Sending ${allMovies.length} movies (filtered by "${search || 'none'}").`);
+        // Build the sort options based on 'sort' and 'order'
+        if (sort) {
+            // Determine sort direction: 1 for ascending (default), -1 for descending
+            const sortDirection = (order && order.toLowerCase() === 'desc') ? -1 : 1;
+            // Set the sort field and direction
+            sortOptions[sort] = sortDirection;
+        } else {
+            // Default sort if no sort parameter is provided (e.g., by title ascending)
+            sortOptions.title = 1; // You can change this default as desired
+        }
+
+        const allMovies = await Movie.find(filter).sort(sortOptions); // Apply filter AND sort options
+        console.log(`GET /movies requested: Sending ${allMovies.length} movies (filtered by "${search || 'none'}", sorted by ${sort || 'title'} ${order || 'asc'}).`);
         res.json(allMovies);
     } catch (error) {
         console.error('Error fetching all movies:', error);

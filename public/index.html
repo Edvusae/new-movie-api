@@ -15,7 +15,26 @@
             <button id="searchButton">Search</button>
             <button id="clearSearchButton">Clear Search</button>
         </div>
-        <hr> <form id="movieForm">
+
+        <div class="sort-section">
+            <label for="sortBy">Sort by:</label>
+            <select id="sortBy">
+                <option value="title">Title</option>
+                <option value="director">Director</option>
+                <option value="year">Year</option>
+            </select>
+
+            <label for="sortOrder">Order:</label>
+            <select id="sortOrder">
+                <option value="asc">Ascending</option>
+                <option value="desc">Descending</option>
+            </select>
+
+            <button id="applySortButton">Apply Sort</button>
+        </div>
+        <hr>
+
+        <form id="movieForm">
             <input type="hidden" id="movieId">
             <input type="text" id="title" placeholder="Movie Title" required>
             <input type="text" id="director" placeholder="Director" required>

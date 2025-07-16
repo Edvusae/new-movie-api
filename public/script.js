@@ -1,6 +1,6 @@
 // public/script.js
 
-const API_BASE = 'http://localhost:3000'; // Make sure this matches your backend port
+const API_BASE = 'http://localhost:3000';
 
 const movieForm = document.getElementById('movieForm');
 const movieIdInput = document.getElementById('movieId');
@@ -10,25 +10,44 @@ const yearInput = document.getElementById('year');
 const submitButton = document.getElementById('submitButton');
 const movieListDiv = document.getElementById('movieList');
 
-// --- New Search Elements ---
+// --- Search Elements ---
 const searchInput = document.getElementById('searchInput');
 const searchButton = document.getElementById('searchButton');
 const clearSearchButton = document.getElementById('clearSearchButton');
 
+// --- New Sort Elements ---
+const sortBySelect = document.getElementById('sortBy');
+const sortOrderSelect = document.getElementById('sortOrder');
+const applySortButton = document.getElementById('applySortButton');
+
+
 // --- 1. Function to Fetch and Display Movies (GET) ---
 async function fetchAndDisplayMovies() {
     try {
-        const searchTerm = searchInput.value; // Get the current value from the search input
+        const searchTerm = searchInput.value;
+        const sortBy = sortBySelect.value;   // Get the selected sort field
+        const sortOrder = sortOrderSelect.value; // Get the selected sort order
 
         let url = `${API_BASE}/movies`;
+        const params = new URLSearchParams(); // Use URLSearchParams for easier query building
+
         if (searchTerm) {
-            // Add the search query parameter if searchTerm is not empty
-            url += `?search=${encodeURIComponent(searchTerm)}`;
+            params.append('search', searchTerm);
+        }
+        if (sortBy) {
+            params.append('sort', sortBy);
+        }
+        if (sortOrder) {
+            params.append('order', sortOrder);
+        }
+
+        // Add parameters to the URL if any exist
+        if (params.toString()) {
+            url += `?${params.toString()}`;
         }
 
         const response = await fetch(url);
         if (!response.ok) {
-            // Use existing error handling logic
             const errorData = await response.json().catch(() => ({ message: 'Unknown error from server.' }));
             throw new Error(`Failed to fetch movies: ${errorData.message || response.statusText}`);
         }
@@ -36,7 +55,7 @@ async function fetchAndDisplayMovies() {
 
         movieListDiv.innerHTML = ''; // Clear existing list
         if (movies.length === 0) {
-            movieListDiv.innerHTML = '<p class="no-movies-message">No movies found. Try a different search or add a new movie!</p>';
+            movieListDiv.innerHTML = '<p class="no-movies-message">No movies found. Try a different search, sort, or add a new movie!</p>';
             return;
         }
 
@@ -55,7 +74,6 @@ async function fetchAndDisplayMovies() {
             movieListDiv.appendChild(movieCard);
         });
 
-        // Add event listeners for new edit/delete buttons
         document.querySelectorAll('.edit-btn').forEach(button => {
             button.addEventListener('click', handleEdit);
         });
@@ -72,22 +90,28 @@ async function fetchAndDisplayMovies() {
 
 // ... (Rest of your handleAddMovie, handleDelete, handleEdit, handleUpdateMovie functions unchanged)
 
+
 // --- Initial setup on page load ---
 document.addEventListener('DOMContentLoaded', () => {
     fetchAndDisplayMovies(); // Load all movies on initial page load
 
-    // Add event listener for the Add/Update form
     movieForm.addEventListener('submit', handleAddMovie);
 
-    // --- New Event Listeners for Search ---
-    searchButton.addEventListener('click', fetchAndDisplayMovies); // Trigger search on button click
+    // Search Event Listeners
+    searchButton.addEventListener('click', fetchAndDisplayMovies);
     searchInput.addEventListener('keypress', (event) => {
-        if (event.key === 'Enter') { // Allow searching on Enter key press
+        if (event.key === 'Enter') {
             fetchAndDisplayMovies();
         }
     });
     clearSearchButton.addEventListener('click', () => {
-        searchInput.value = ''; // Clear the search input
-        fetchAndDisplayMovies(); // Fetch all movies again
+        searchInput.value = '';
+        fetchAndDisplayMovies();
     });
+
+    // --- New Sort Event Listeners ---
+    applySortButton.addEventListener('click', fetchAndDisplayMovies); // Apply sort on button click
+    // Optional: Auto-apply sort when dropdown selection changes
+    // sortBySelect.addEventListener('change', fetchAndDisplayMovies);
+    // sortOrderSelect.addEventListener('change', fetchAndDisplayMovies);
 });
