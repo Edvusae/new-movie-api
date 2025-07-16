@@ -4,14 +4,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 
-// Import your validation rules and the validation middleware
-const {
-    createMovieValidation,
-    updateMovieValidation,
-    movieIdValidation,
-    validate
-} = require('../validation/movieValidation'); // Adjust path as needed
-
+// --- Movie Schema and Model ---
 const movieSchema = new mongoose.Schema({
     title: { type: String, required: true },
     director: { type: String, required: true },
@@ -19,24 +12,32 @@ const movieSchema = new mongoose.Schema({
 });
 const Movie = mongoose.model('Movie', movieSchema);
 
-
 // --- API Routes for Movies ---
 
 // POST /movies: Create a new movie
-router.post('/', createMovieValidation, validate, async (req, res) => {
+router.post('/', async (req, res) => {
     try {
         console.log(`POST /movies requested.`);
-        // Data is already validated by createMovieValidation and validate middleware
         const { title, director, year } = req.body;
 
+        // Validation (same as frontend)
+        if (
+            !title ||
+            !director ||
+            typeof year !== 'number' ||
+            isNaN(year) ||
+            year < 1800 ||
+            year > new Date().getFullYear() + 5
+        ) {
+            return res.status(400).json({ message: 'Title and director are required, year must be a valid number.' });
+        }
+
         const newMovie = new Movie({ title, director, year });
-        const savedMovie = await newMovie.save(); // Mongoose will still do final validation
+        const savedMovie = await newMovie.save();
         res.status(201).json(savedMovie);
 
     } catch (error) {
         console.error('Error creating movie:', error);
-        // This catch block will now mostly catch database-related errors (e.g., connection issues)
-        // or unexpected Mongoose errors, as basic validation is handled earlier.
         res.status(500).json({ message: 'An internal server error occurred while creating the movie' });
     }
 });
@@ -54,10 +55,9 @@ router.get('/', async (req, res) => {
 });
 
 // GET /movies/:id: Get a movie by ID
-router.get('/:id', movieIdValidation, validate, async (req, res) => {
+router.get('/:id', async (req, res) => {
     try {
         console.log(`GET /movies/${req.params.id} requested.`);
-        // ID is already validated by movieIdValidation and validate middleware
         const foundMovie = await Movie.findById(req.params.id);
 
         if (foundMovie) {
@@ -67,23 +67,32 @@ router.get('/:id', movieIdValidation, validate, async (req, res) => {
         }
     } catch (error) {
         console.error('Error fetching movie by ID:', error);
-        // This catch block will now only catch very unexpected errors,
-        // as CastError is now handled by express-validator.
         res.status(500).json({ message: 'An internal server error occurred while fetching the movie' });
     }
 });
 
 // PUT /movies/:id: Update an existing movie
-router.put('/:id', movieIdValidation, updateMovieValidation, validate, async (req, res) => {
+router.put('/:id', async (req, res) => {
     try {
         console.log(`PUT /movies/${req.params.id} requested.`);
-        // ID and body data are already validated
         const { title, director, year } = req.body;
+
+        // Validation (same as frontend)
+        if (
+            !title ||
+            !director ||
+            typeof year !== 'number' ||
+            isNaN(year) ||
+            year < 1800 ||
+            year > new Date().getFullYear() + 5
+        ) {
+            return res.status(400).json({ message: 'Title and director are required, year must be a valid number.' });
+        }
 
         const updatedMovie = await Movie.findByIdAndUpdate(
             req.params.id,
             { title, director, year },
-            { new: true, runValidators: true } // runValidators true still good for edge cases/schema-specific rules
+            { new: true, runValidators: true }
         );
 
         if (!updatedMovie) {
@@ -98,10 +107,9 @@ router.put('/:id', movieIdValidation, updateMovieValidation, validate, async (re
 });
 
 // DELETE /movies/:id: Delete a movie by ID
-router.delete('/:id', movieIdValidation, validate, async (req, res) => {
+router.delete('/:id', async (req, res) => {
     try {
         console.log(`DELETE /movies/${req.params.id} requested.`);
-        // ID is already validated
         const deletedMovie = await Movie.findByIdAndDelete(req.params.id);
 
         if (!deletedMovie) {
