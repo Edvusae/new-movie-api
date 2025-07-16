@@ -64,129 +64,116 @@ async function fetchAndDisplayMovies() {
     } catch (error) {
         console.error('Error fetching movies:', error);
         moviesContainer.innerHTML = '<p style="color: red;">Failed to load movies. Please check the server and network.</p>';
-    }
-}
+    }};
 
 // --- 3. Function to Handle Adding a New Movie (POST) ---
 async function handleAddMovie(event) {
-    event.preventDefault(); // Stop the default form submission (which would refresh the page)
+    event.preventDefault();
 
     const title = titleInput.value;
     const director = directorInput.value;
-    const year = parseInt(yearInput.value, 10); // Convert year to a number
+    const year = parseInt(yearInput.value, 10);
 
-    // Basic client-side validation
     if (!title || !director || isNaN(year) || year < 1800 || year > new Date().getFullYear() + 5) {
         alert('Please fill in all fields correctly: Title and Director are required, Year must be a valid number.');
         return;
     }
 
     try {
-        const response = await fetch(`${API_BASE}/movies`, { // Make a POST request to the API
+        const response = await fetch(`${API_BASE}/movies`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json' // Tell the server we're sending JSON
-            },
-            body: JSON.stringify({ title, director, year }) // Convert JS object to JSON string
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, director, year })
         });
 
         if (!response.ok) {
-            // Attempt to parse error message from server
-            const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
-            throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.message || response.statusText}`);
+            // Attempt to parse structured error message from backend
+            const errorData = await response.json().catch(() => ({ message: 'Unknown error from server.' }));
+            // Construct a user-friendly message
+            let errorMessage = errorData.message || response.statusText || 'An unexpected error occurred.';
+            if (errorData.errors && Array.isArray(errorData.errors)) {
+                errorMessage += '\nDetails: ' + errorData.errors.join(', ');
+            }
+            throw new Error(`Failed to add movie: ${errorMessage}`);
         }
 
-        const newMovie = await response.json(); // Get the newly created movie from the response
+        const newMovie = await response.json();
         console.log('Movie added:', newMovie);
-
-        // Clear the form fields after successful submission
-        movieForm.reset(); // A handy method to clear all form fields
-
-        // Re-fetch and display all movies to update the list in the UI
+        movieForm.reset();
         fetchAndDisplayMovies();
 
     } catch (error) {
         console.error('Error adding movie:', error);
-        alert(`Failed to add movie: ${error.message || 'Check console for more details.'}`);
+        alert(error.message); // Display the more detailed error message
     }
 }
 
 // --- 4. Function to Handle Deleting a Movie (DELETE) ---
 async function handleDelete(event) {
-    // Get the movie ID from the 'data-id' attribute of the clicked button
     const movieId = event.target.dataset.id;
-
-    // Ask for user confirmation before deleting
     if (!confirm('Are you sure you want to delete this movie? This action cannot be undone.')) {
-        return; // If user cancels, stop the function
+        return;
     }
 
     try {
         const response = await fetch(`${API_BASE}/movies/${movieId}`, {
-            method: 'DELETE' // Specify the HTTP DELETE method
+            method: 'DELETE'
         });
 
         if (!response.ok) {
-            // Attempt to parse error message from server
-            const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
-            throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.message || response.statusText}`);
+            const errorData = await response.json().catch(() => ({ message: 'Unknown error from server.' }));
+            throw new Error(`Failed to delete movie: ${errorData.message || response.statusText}`);
         }
 
-        console.log(`Movie ${movieId} deleted successfully.`);
-        // Re-fetch and display all movies to update the list (remove the deleted one)
+        // Backend now sends { message: 'Movie deleted successfully', deletedMovie }
+        const result = await response.json();
+        console.log(result.message, result.deletedMovie); // Log the success message
         fetchAndDisplayMovies();
 
     } catch (error) {
         console.error('Error deleting movie:', error);
-        alert(`Failed to delete movie: ${error.message || 'Check console for more details.'}`);
+        alert(error.message); // Display the more detailed error message
     }
 }
 
 // --- 5. Function to Handle 'Edit' Button Click (Prepares form for PUT) ---
 async function handleEdit(event) {
-    const movieId = event.target.dataset.id; // Get the ID of the movie to edit
+    const movieId = event.target.dataset.id;
 
     try {
-        // Fetch the specific movie's data from the backend to populate the form
         const response = await fetch(`${API_BASE}/movies/${movieId}`);
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const errorData = await response.json().catch(() => ({ message: 'Unknown error from server.' }));
+            throw new Error(`Failed to fetch movie for edit: ${errorData.message || response.statusText}`);
         }
-        const movieToEdit = await response.json(); // Parse the JSON response
+        const movieToEdit = await response.json();
 
-        // Populate the form fields with the fetched movie's data
-        titleInput.value = movieToEdit.title; // Set the title input
-        directorInput.value = movieToEdit.director; // Set the director input
-        // Convert year to string for input compatibility
+        titleInput.value = movieToEdit.title;
+        directorInput.value = movieToEdit.director;
         yearInput.value = movieToEdit.year;
-        movieIdInput.value = movieToEdit._id; // Store the movie's _id in the hidden input
+        movieIdInput.value = movieToEdit._id;
 
-        // Change the submit button's text and re-configure form submission for updating
         submitButton.textContent = 'Update Movie';
-        // Remove the 'add' listener to prevent it from firing when updating
         movieForm.removeEventListener('submit', handleAddMovie);
-        // Add the 'update' listener for the next form submission
         movieForm.addEventListener('submit', handleUpdateMovie);
 
-        // Optional: Scroll to the form for better user experience
         movieForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
     } catch (error) {
         console.error('Error fetching movie for edit:', error);
-        alert('Failed to load movie data for editing. Check console for details.');
+        alert(error.message); // Display the more detailed error message
     }
 }
 
 // --- 6. Function to Handle Updating an Existing Movie (PUT) ---
 async function handleUpdateMovie(event) {
-    event.preventDefault(); // Prevent default form submission
+    event.preventDefault();
 
-    const movieId = movieIdInput.value; // Get the movie ID from the hidden input
+    const movieId = movieIdInput.value;
     const title = titleInput.value;
     const director = directorInput.value;
     const year = parseInt(yearInput.value, 10);
 
-    // Basic client-side validation
     if (!title || !director || isNaN(year) || year < 1800 || year > new Date().getFullYear() + 5) {
         alert('Please fill in all fields correctly: Title and Director are required, Year must be a valid number.');
         return;
@@ -194,46 +181,34 @@ async function handleUpdateMovie(event) {
 
     try {
         const response = await fetch(`${API_BASE}/movies/${movieId}`, {
-            method: 'PUT', // Specify the HTTP PUT method
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ title, director, year })
         });
 
         if (!response.ok) {
-            const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
-            throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.message || response.statusText}`);
+            const errorData = await response.json().catch(() => ({ message: 'Unknown error from server.' }));
+            let errorMessage = errorData.message || response.statusText || 'An unexpected error occurred.';
+            if (errorData.errors && Array.isArray(errorData.errors)) {
+                errorMessage += '\nDetails: ' + errorData.errors.join(', ');
+            }
+            throw new Error(`Failed to update movie: ${errorMessage}`);
         }
 
         const updatedMovie = await response.json();
         console.log('Movie updated:', updatedMovie);
 
-        // --- Reset Form to 'Add Movie' Mode After Update ---
-        movieForm.reset(); // Clear all form fields
-        submitButton.textContent = 'Add Movie'; // Change button text back
-        movieIdInput.value = ''; // Clear the hidden ID
-
-        // Re-configure form submission: remove 'update' listener, add 'add' listener back
+        movieForm.reset();
+        submitButton.textContent = 'Add Movie';
+        movieIdInput.value = '';
         movieForm.removeEventListener('submit', handleUpdateMovie);
         movieForm.addEventListener('submit', handleAddMovie);
 
-        // Re-fetch and display all movies to show the updated list
         fetchAndDisplayMovies();
 
     } catch (error) {
         console.error('Error updating movie:', error);
-        alert(`Failed to update movie: ${error.message || 'Check console for more details.'}`);
+        alert(error.message); // Display the more detailed error message
     }
 }
-
-
-// --- 7. Initial Setup / Event Listeners on Page Load ---
-// This ensures that when the page first loads,
-// the initial movie list is fetched and the form is ready for adding.
-// Attach the initial event listener for adding movies to the form.
-// This will be swapped with handleUpdateMovie when editing.
-movieForm.addEventListener('submit', handleAddMovie);
-
-// Fetch and display movies when the script first runs (page loads)
-fetchAndDisplayMovies();
+// --- 7. Event Listeners for Form Submission and Initial Fetch ---
