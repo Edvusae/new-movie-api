@@ -3,36 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Movie Collection</title>
+    <title>Movie CRUD App</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>My Movie Collection</h1>
-    </header>
+    <div class="container">
+        <h1>Movie Collection</h1>
 
-    <main>
-        <section id="add-movie">
-            <h2>Add New Movie</h2>
-            <form id="movie-form">
-                <input type="text" id="title" placeholder="Title" required>
-                <input type="text" id="director" placeholder="Director" required>
-                <input type="number" id="year" placeholder="Year" required>
-                <button type="submit">Add Movie</button>
-            </form>
-        </section>
+        <div class="search-section">
+            <input type="text" id="searchInput" placeholder="Search by title or director...">
+            <button id="searchButton">Search</button>
+            <button id="clearSearchButton">Clear Search</button>
+        </div>
+        <hr> <form id="movieForm">
+            <input type="hidden" id="movieId">
+            <input type="text" id="title" placeholder="Movie Title" required>
+            <input type="text" id="director" placeholder="Director" required>
+            <input type="number" id="year" placeholder="Year" required>
+            <button type="submit" id="submitButton">Add Movie</button>
+        </form>
 
-        <section id="movie-list">
-            <h2>All Movies</h2>
-            <div id="movies-container">
-                <p>Loading movies...</p>
+        <hr>
+
+        <h2>Your Movies</h2>
+        <div id="movieList" class="movie-grid">
             </div>
-        </section>
-    </main>
+    </div>
 
-    <footer>
-        <p>&copy; 2025 My Movie Collection</p>
-    </footer>
-
-    <script src="script.js"></script> </body>
+    <script src="script.js"></script>
+</body>
 </html>
