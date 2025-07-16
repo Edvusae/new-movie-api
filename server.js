@@ -27,20 +27,23 @@ app.use('/movies', movieRoutes);~
 app.use(errorHandler); // This will catch any errors passed via next(error)
 
 // Establish MongoDB connection
+// server.js
+
+// ... (other imports and app setup)
+
+// Establish MongoDB connection
 mongoose.connect(MONGODB_URI)
     .then(() => {
         console.log('Connected to MongoDB!');
         app.listen(port, () => {
             console.log(`SERVER IS RUNNING: http://localhost:${port}`);
-            console.log('Endpoints:');
-            console.log(` - POST /movies: Create a new movie`);
-            console.log(` - GET /movies: Get all movies`);
-            console.log(` - GET /movies/:id: Get a movie by ID`);
-            console.log(` - PUT /movies/:id: Update an existing movie`);
-            console.log(` - DELETE /movies/:id: Delete a movie by ID`);
+            // ... (your endpoint logs)
         });
     })
-    .catch((error) => {
+    .catch((error) => { // <--- THIS .catch() is crucial
         console.error('Error connecting to MongoDB:', error);
-        process.exit(1);
+        process.exit(1); // Exit the process if unable to connect
     });
+
+// ... (your error handling middleware at the very end)
+app.use(errorHandler);
