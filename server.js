@@ -7,10 +7,11 @@ const mongoose = require('mongoose');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// --- Import your new logger middleware ---
 const logger = require('./middleware/logger');
 const errorHandler = require('./middleware/errorHandler');
 const movieRoutes = require('./routes/movieRoutes');
+// --- Import your new authRoutes ---
+const authRoutes = require('./routes/authRoutes'); // Assuming it's in the same directory as movieRoutes
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -19,13 +20,14 @@ if (!MONGODB_URI) {
     process.exit(1);
 }
 
-// --- IMPORTANT: Use the logger middleware early ---
-app.use(logger); // This will log every request
+app.use(logger);
+app.use(express.json());
+app.use(express.static('public'));
 
-app.use(express.json()); // Body parser should come after logger if you want to log parsed body
-app.use(express.static('public')); // Serve static files from the 'public' directory 
-
-app.use('/movies', movieRoutes);
+// --- Register your new auth routes ---
+// It's common to prefix auth routes with /api/auth or just /auth
+app.use('/api/auth', authRoutes); // All routes in authRoutes will be prefixed with /api/auth
+app.use('/movies', movieRoutes); // Your existing movie routes
 
 // Establish MongoDB connection
 mongoose.connect(MONGODB_URI)
@@ -34,6 +36,7 @@ mongoose.connect(MONGODB_URI)
         app.listen(port, () => {
             console.log(`SERVER IS RUNNING: http://localhost:${port}`);
             console.log('Endpoints:');
+            console.log(` - POST /api/auth/register: Register a new user`); // New endpoint
             console.log(` - POST /movies: Create a new movie`);
             console.log(` - GET /movies: Get all movies (with search/sort)`);
             console.log(` - GET /movies/:id: Get a movie by ID`);
@@ -45,6 +48,4 @@ mongoose.connect(MONGODB_URI)
         console.error('Error connecting to MongoDB:', error);
         process.exit(1);
     });
-
-// Error handling middleware (must be last)
 app.use(errorHandler);
