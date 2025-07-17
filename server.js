@@ -7,9 +7,10 @@ const mongoose = require('mongoose');
 const app = express();
 const port = process.env.PORT || 3000;
 
-const movieRoutes = require('./routes/movieRoutes');
-// --- Import your new error handling middleware ---
+// --- Import your new logger middleware ---
+const logger = require('./middleware/logger');
 const errorHandler = require('./middleware/errorHandler');
+const movieRoutes = require('./routes/movieRoutes');
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -18,18 +19,13 @@ if (!MONGODB_URI) {
     process.exit(1);
 }
 
-app.use(express.json());
+// --- IMPORTANT: Use the logger middleware early ---
+app.use(logger); // This will log every request
+
+app.use(express.json()); // Body parser should come after logger if you want to log parsed body
 app.use(express.static('public'));
 
-app.use('/movies', movieRoutes);~
-
-// --- IMPORTANT: Add error handling middleware LAST ---
-app.use(errorHandler); // This will catch any errors passed via next(error)
-
-// Establish MongoDB connection
-// server.js
-
-// ... (other imports and app setup)
+app.use('/movies', movieRoutes);
 
 // Establish MongoDB connection
 mongoose.connect(MONGODB_URI)
@@ -37,13 +33,18 @@ mongoose.connect(MONGODB_URI)
         console.log('Connected to MongoDB!');
         app.listen(port, () => {
             console.log(`SERVER IS RUNNING: http://localhost:${port}`);
-            // ... (your endpoint logs)
+            console.log('Endpoints:');
+            console.log(` - POST /movies: Create a new movie`);
+            console.log(` - GET /movies: Get all movies (with search/sort)`);
+            console.log(` - GET /movies/:id: Get a movie by ID`);
+            console.log(` - PUT /movies/:id: Update an existing movie`);
+            console.log(` - DELETE /movies/:id: Delete a movie by ID`);
         });
     })
-    .catch((error) => { // <--- THIS .catch() is crucial
+    .catch((error) => {
         console.error('Error connecting to MongoDB:', error);
-        process.exit(1); // Exit the process if unable to connect
+        process.exit(1);
     });
 
-// ... (your error handling middleware at the very end)
+// Error handling middleware (must be last)
 app.use(errorHandler);
