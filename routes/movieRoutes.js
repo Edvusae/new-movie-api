@@ -16,11 +16,11 @@ const {
 router.post('/', createMovieValidation, validate, async (req, res, next) => {
     try {
         console.log(`POST /movies requested.`);
-        const { title, director, year } = req.body;
+        const { title, director, year } = req.body; // Destructure the request body
 
-        const newMovie = new Movie({ title, director, year });
-        const savedMovie = await newMovie.save();
-        res.status(201).json(savedMovie);
+        const newMovie = new Movie({ title, director, year }); // Create a new Movie instance
+        const savedMovie = await newMovie.save(); // Save the movie to the database
+        res.status(201).json(savedMovie); // Respond with the created movie
 
     } catch (error) {
         console.error('Error creating movie:', error);

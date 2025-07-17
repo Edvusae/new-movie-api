@@ -23,7 +23,7 @@ if (!MONGODB_URI) {
 app.use(logger); // This will log every request
 
 app.use(express.json()); // Body parser should come after logger if you want to log parsed body
-app.use(express.static('public'));
+app.use(express.static('public')); // Serve static files from the 'public' directory 
 
 app.use('/movies', movieRoutes);
 
