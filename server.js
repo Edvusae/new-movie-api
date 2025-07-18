@@ -1,4 +1,4 @@
-// server.js
+/// server.js
 
 require('dotenv').config();
 
@@ -10,8 +10,9 @@ const port = process.env.PORT || 3000;
 const logger = require('./middleware/logger');
 const errorHandler = require('./middleware/errorHandler');
 const movieRoutes = require('./routes/movieRoutes');
-// --- Import your new authRoutes ---
-const authRoutes = require('./routes/authRoutes'); // Assuming it's in the same directory as movieRoutes
+const authRoutes = require('./routes/authRoutes');
+// --- Import your new publicMovieRoutes ---
+const publicMovieRoutes = require('./routes/publicMovieRoutes'); // NEW IMPORT
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -24,10 +25,10 @@ app.use(logger);
 app.use(express.json());
 app.use(express.static('public'));
 
-// --- Register your new auth routes ---
-// It's common to prefix auth routes with /api/auth or just /auth
-app.use('/api/auth', authRoutes); // All routes in authRoutes will be prefixed with /api/auth
-app.use('/movies', movieRoutes); // Your existing movie routes
+app.use('/api/auth', authRoutes);
+app.use('/movies', movieRoutes);
+// --- Register your new public movie routes ---
+app.use('/api/public/movies', publicMovieRoutes); // NEW ROUTE REGISTRATION
 
 // Establish MongoDB connection
 mongoose.connect(MONGODB_URI)
@@ -36,16 +37,20 @@ mongoose.connect(MONGODB_URI)
         app.listen(port, () => {
             console.log(`SERVER IS RUNNING: http://localhost:${port}`);
             console.log('Endpoints:');
-            console.log(` - POST /api/auth/register: Register a new user`); // New endpoint
-            console.log(` - POST /movies: Create a new movie`);
-            console.log(` - GET /movies: Get all movies (with search/sort)`);
-            console.log(` - GET /movies/:id: Get a movie by ID`);
-            console.log(` - PUT /movies/:id: Update an existing movie`);
-            console.log(` - DELETE /movies/:id: Delete a movie by ID`);
+            console.log(` - GET /api/public/movies/latest: Get latest movie from TMDB (Public)`); // NEW
+            console.log(` - GET /api/public/movies/trending: Get trending movies from TMDB (Public)`); // NEW
+            console.log(` - POST /api/auth/register: Register a new user`);
+            console.log(` - POST /api/auth/login: Login user and get JWT`);
+            console.log(` - POST /movies: Create a new movie (Auth/Admin/SuperAdmin)`);
+            console.log(` - GET /movies: Get all movies (Public, with search/sort)`);
+            console.log(` - GET /movies/:id: Get a movie by ID (Public)`);
+            console.log(` - PUT /movies/:id: Update an existing movie (Auth/Admin/SuperAdmin)`);
+            console.log(` - DELETE /movies/:id: Delete a movie by ID (Auth/SuperAdmin)`);
         });
     })
     .catch((error) => {
         console.error('Error connecting to MongoDB:', error);
         process.exit(1);
     });
+
 app.use(errorHandler);

@@ -3,51 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movie CRUD App</title>
+    <title>Movie Collection App</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Movie Collection</h1>
-
-        <div class="search-section">
-            <input type="text" id="searchInput" placeholder="Search by title or director...">
-            <button id="searchButton">Search</button>
-            <button id="clearSearchButton">Clear Search</button>
-        </div>
-
-        <div class="sort-section">
-            <label for="sortBy">Sort by:</label>
-            <select id="sortBy">
-                <option value="title">Title</option>
-                <option value="director">Director</option>
-                <option value="year">Year</option>
-            </select>
-
-            <label for="sortOrder">Order:</label>
-            <select id="sortOrder">
-                <option value="asc">Ascending</option>
-                <option value="desc">Descending</option>
-            </select>
-
-            <button id="applySortButton">Apply Sort</button>
-        </div>
-        <hr>
-
-        <form id="movieForm">
-            <input type="hidden" id="movieId">
-            <input type="text" id="title" placeholder="Movie Title" required>
-            <input type="text" id="director" placeholder="Director" required>
-            <input type="number" id="year" placeholder="Year" required>
-            <button type="submit" id="submitButton">Add Movie</button>
-        </form>
-
-        <hr>
-
-        <h2>Your Movies</h2>
-        <div id="movieList" class="movie-grid">
+    <header>
+        <h1>My Movie Collection</h1>
+        <nav>
+            <div class="auth-controls">
+                <button id="showRegisterFormBtn" class="auth-btn">Register</button>
+                <button id="showLoginFormBtn" class="auth-btn">Login</button>
+                <button id="logoutBtn" class="auth-btn" style="display: none;">Logout</button>
+                <span id="loggedInUser" class="user-info" style="display: none;"></span>
             </div>
-    </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="publicMoviesSection" class="public-movies-section">
+            <h2>Trending Movies</h2>
+            <div id="publicMovieList" class="movie-grid">
+                </div>
+            <p id="publicMoviesMessage" class="message"></p>
+        </section>
+
+        <section id="authForms" class="auth-forms-section">
+            <h2 id="authFormTitle">Register</h2>
+            <form id="registerForm" class="auth-form active-form">
+                <input type="text" id="registerUsername" placeholder="Username" required>
+                <input type="email" id="registerEmail" placeholder="Email" required>
+                <input type="password" id="registerPassword" placeholder="Password" required>
+                <button type="submit">Register</button>
+                <p class="toggle-auth">Already have an account? <a href="#" id="switchToLogin">Login here</a></p>
+            </form>
+
+            <form id="loginForm" class="auth-form">
+                <input type="email" id="loginEmail" placeholder="Email" required>
+                <input type="password" id="loginPassword" placeholder="Password" required>
+                <button type="submit">Login</button>
+                <p class="toggle-auth">Don't have an account? <a href="#" id="switchToRegister">Register here</a></p>
+            </form>
+
+            <p id="authMessage" class="message"></p>
+        </section>
+
+        <section id="movieManagementSection" class="movie-management-section" style="display: none;">
+            <h2>Add/Edit Movie</h2>
+            </section>
+
+        <section id="movieListingSection" class="movie-listing-section" style="display: none;">
+            <h2>Your Movie Collection</h2>
+            </section>
+    </main>
+
+     <footer>
+        <p>&copy; 2025 Movie Collection App. All rights reserved.</p>
+        <p>Data provided by <a href="https://www.themoviedb.org/" target="_blank">The Movie Database (TMDB)</a>.</p>
+    </footer>
 
     <script src="script.js"></script>
 </body>

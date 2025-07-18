@@ -10,7 +10,8 @@ const logger = (req, res, next) => {
     console.log(`[${timestamp}] ${ip} ${method} ${url}`);
 
     // If there's a request body (for POST/PUT requests), log it too (be careful with sensitive data)
-    if (Object.keys(req.body).length > 0) {
+    // Check if req.body exists and is an object before trying to get its keys
+    if (req.body && typeof req.body === 'object' && Object.keys(req.body).length > 0) {
         console.log('  Body:', req.body);
     }
 
