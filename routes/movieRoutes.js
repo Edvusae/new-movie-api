@@ -1,5 +1,7 @@
 // routes/movieRoutes.js
 
+// routes/movieRoutes.js
+
 const express = require('express');
 const router = express.Router();
 const Movie = require('../models/Movie');
@@ -9,6 +11,10 @@ const {
     movieIdValidation,
     validate
 } = require('../validation/movieValidation');
+// --- Import the new authentication middleware ---
+const authMiddleware = require('../middleware/authMiddleware');
+
+// ... (rest of your movieRoutes.js)
 
 // --- API Routes for Movies ---
 
