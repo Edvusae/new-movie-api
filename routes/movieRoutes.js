@@ -18,15 +18,15 @@ const authMiddleware = require('../middleware/authMiddleware');
 
 // --- API Routes for Movies ---
 
-// POST /movies: Create a new movie
-router.post('/', createMovieValidation, validate, async (req, res, next) => {
+// POST /movies: Create a new movie (requires authentication)
+router.post('/', authMiddleware, createMovieValidation, validate, async (req, res, next) => { // Added authMiddleware
     try {
-        console.log(`POST /movies requested.`);
-        const { title, director, year } = req.body; // Destructure the request body
+        console.log(`POST /movies requested by user ID: ${req.user.id}`); // Now you can access req.user
+        const { title, director, year } = req.body;
 
-        const newMovie = new Movie({ title, director, year }); // Create a new Movie instance
-        const savedMovie = await newMovie.save(); // Save the movie to the database
-        res.status(201).json(savedMovie); // Respond with the created movie
+        const newMovie = new Movie({ title, director, year });
+        const savedMovie = await newMovie.save();
+        res.status(201).json(savedMovie);
 
     } catch (error) {
         console.error('Error creating movie:', error);
@@ -34,15 +34,14 @@ router.post('/', createMovieValidation, validate, async (req, res, next) => {
     }
 });
 
-// GET /movies: Get all movies with optional search/filter/sort
+// GET /movies: Get all movies with optional search/filter/sort (public/no authentication needed here)
 router.get('/', async (req, res, next) => {
     try {
-        const { search, sort, order } = req.query; // Extract search, sort, and order parameters
+        const { search, sort, order } = req.query;
 
-        let filter = {}; // Initialize an empty filter object
-        let sortOptions = {}; // Initialize an empty sort options object
+        let filter = {};
+        let sortOptions = {};
 
-        // Build the filter based on 'search'
         if (search) {
             filter = {
                 $or: [
@@ -52,18 +51,14 @@ router.get('/', async (req, res, next) => {
             };
         }
 
-        // Build the sort options based on 'sort' and 'order'
         if (sort) {
-            // Determine sort direction: 1 for ascending (default), -1 for descending
             const sortDirection = (order && order.toLowerCase() === 'desc') ? -1 : 1;
-            // Set the sort field and direction
             sortOptions[sort] = sortDirection;
         } else {
-            // Default sort if no sort parameter is provided (e.g., by title ascending)
-            sortOptions.title = 1; // You can change this default as desired
+            sortOptions.title = 1;
         }
 
-        const allMovies = await Movie.find(filter).sort(sortOptions); // Apply filter AND sort options
+        const allMovies = await Movie.find(filter).sort(sortOptions);
         console.log(`GET /movies requested: Sending ${allMovies.length} movies (filtered by "${search || 'none'}", sorted by ${sort || 'title'} ${order || 'asc'}).`);
         res.json(allMovies);
     } catch (error) {
@@ -72,7 +67,7 @@ router.get('/', async (req, res, next) => {
     }
 });
 
-// GET /movies/:id: Get a movie by ID
+// GET /movies/:id: Get a movie by ID (public/no authentication needed here)
 router.get('/:id', movieIdValidation, validate, async (req, res, next) => {
     try {
         console.log(`GET /movies/${req.params.id} requested.`);
@@ -89,10 +84,10 @@ router.get('/:id', movieIdValidation, validate, async (req, res, next) => {
     }
 });
 
-// PUT /movies/:id: Update an existing movie
-router.put('/:id', movieIdValidation, updateMovieValidation, validate, async (req, res, next) => {
+// PUT /movies/:id: Update an existing movie (requires authentication)
+router.put('/:id', authMiddleware, movieIdValidation, updateMovieValidation, validate, async (req, res, next) => { // Added authMiddleware
     try {
-        console.log(`PUT /movies/${req.params.id} requested.`);
+        console.log(`PUT /movies/${req.params.id} requested by user ID: ${req.user.id}`); // Access req.user
         const { title, director, year } = req.body;
 
         const updatedMovie = await Movie.findByIdAndUpdate(
@@ -112,10 +107,10 @@ router.put('/:id', movieIdValidation, updateMovieValidation, validate, async (re
     }
 });
 
-// DELETE /movies/:id: Delete a movie by ID
-router.delete('/:id', movieIdValidation, validate, async (req, res, next) => {
+// DELETE /movies/:id: Delete a movie by ID (requires authentication)
+router.delete('/:id', authMiddleware, movieIdValidation, validate, async (req, res, next) => { // Added authMiddleware
     try {
-        console.log(`DELETE /movies/${req.params.id} requested.`);
+        console.log(`DELETE /movies/${req.params.id} requested by user ID: ${req.user.id}`); // Access req.user
         const deletedMovie = await Movie.findByIdAndDelete(req.params.id);
 
         if (!deletedMovie) {
