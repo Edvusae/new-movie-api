@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Movie Collection App</title>
+    <link rel="stylesheet" href="style.css">
+    </head>
+<body>
+    <header>
+        <h1>My Movie Collection</h1>
+        <nav>
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="about.html" class="nav-link">About the App</a> <div class="auth-controls">
+                <button id="showRegisterFormBtn" class="auth-btn">Register</button>
+                <button id="showLoginFormBtn" class="auth-btn">Login</button>
+                <button id="logoutBtn" class="auth-btn" style="display: none;">Logout</button>
+                <span id="loggedInUser" class="user-info" style="display: none;"></span>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="about-section">
+            <h2>About This Application</h2>
+            <p>
+                The **Movie Collection App** is a full-stack web application designed to demonstrate robust user authentication, role-based access control, and seamless interaction with a database and a third-party API. It serves as a personal portfolio piece showcasing my abilities in building secure, dynamic, and user-friendly web experiences.
+            </p>
+
+            <h3>Core Features:</h3>
+            <ul>
+                <li>
+                    <strong>User Authentication:</strong> Secure user registration and login using industry-standard practices (JWT for session management, bcrypt for password hashing).
+                </li>
+                <li>
+                    <strong>Role-Based Access Control (RBAC):</strong> Implemented a tiered permission system with 'user', 'admin', and 'super_admin' roles, restricting access to certain features and API endpoints based on the user's role.
+                    <ul>
+                        <li><Strong>User:</Strong> Can manage their own movie collection.</li>
+                        <li><strong>Admin:</strong> Can add and edit any movies in the collection.</li>
+                        <li><strong>Super Admin:</strong> Has full CRUD (Create, Read, Update, Delete) capabilities over all movies.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Personal Movie Collection Management:</strong> Users can add, view, edit, search, and sort their private movie entries.
+                </li>
+                <li>
+                    <strong>Public Trending Movies:</strong> Integration with The Movie Database (TMDB) API to display trending movies on the homepage for unauthenticated visitors, enhancing discoverability and user engagement. This integration utilizes a backend proxy for API key security and controlled data fetching.
+                </li>
+                <li>
+                    <strong>Responsive Design:</strong> Built with a focus on usability across various devices.
+                </li>
+            </ul>
+
+            <h3>Technologies Used:</h3>
+            <div class="tech-stack">
+                <div class="tech-item">
+                    <h4>Backend:</h4>
+                    <ul>
+                        <li><strong>Node.js:</strong> JavaScript runtime environment.</li>
+                        <li><strong>Express.js:</strong> Web application framework for Node.js, for building RESTful APIs.</li>
+                        <li><strong>MongoDB:</strong> NoSQL database for flexible data storage.</li>
+                        <li><strong>Mongoose:</strong> ODM (Object Data Modeling) library for MongoDB and Node.js.</li>
+                        <li><strong>JSON Web Tokens (JWT):</strong> For secure authentication and authorization.</li>
+                        <li><strong>Bcrypt.js:</strong> For password hashing.</li>
+                        <li><strong>Node-fetch:</strong> For making HTTP requests to external APIs (TMDB).</li>
+                        <li><strong>dotenv:</strong> For managing environment variables securely.</li>
+                    </ul>
+                </div>
+                <div class="tech-item">
+                    <h4>Frontend:</h4>
+                    <ul>
+                        <li><strong>HTML5:</strong> Structure of the web pages.</li>
+                        <li><strong>CSS3:</strong> Styling and layout.</li>
+                        <li><strong>Vanilla JavaScript:</strong> Client-side logic and dynamic content updates.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Motivation & Learning Outcomes:</h3>
+            <p>
+                This project was undertaken to solidify my understanding of full-stack development principles. Key learning outcomes include:
+            </p>
+            <ul>
+                <li>Designing and implementing a secure authentication and authorization system.</li>
+                <li>Building robust RESTful APIs with input validation and error handling.</li>
+                <li>Integrating and securely managing third-party API data.</li>
+                <li>Creating a dynamic and responsive user interface that interacts seamlessly with a backend.</li>
+                <li>Practicing deployment strategies for full-stack applications.</li>
+            </ul>
+
+            <p>Thank you for exploring this application!</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Movie Collection App. All rights reserved.</p>
+        <p>Data provided by <a href="https://www.themoviedb.org/" target="_blank">The Movie Database (TMDB)</a>.</p>
+    </footer>
+</body>
+</html>
