@@ -1,74 +1,73 @@
 // routes/publicMovieRoutes.js
-
 const express = require('express');
 const router = express.Router();
-const fetch = require('node-fetch'); // We'll need to install this
 
-const TMDB_API_KEY = process.env.TMDB_API_KEY;
+// It's good practice to ensure dotenv is loaded if you access process.env
+// directly in this file, though server.js loading it often suffices.
+// require('dotenv').config(); // Uncomment if you face issues with TMDB_API_KEY being undefined here
+
+const TMDB_API_KEY = process.env.TMDB_API_KEY; // <<< This is where the key is read
 const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
-const TMDB_IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500'; // Common size for posters
 
-if (!TMDB_API_KEY) {
-    console.error('FATAL ERROR: TMDB_API_KEY is not defined!');
-    // In a real app, you might want to gracefully handle this rather than exit
-    process.exit(1);
-}
-
-// GET /api/public/movies/latest (for a single latest movie or a few)
-router.get('/latest', async (req, res, next) => {
-    try {
-        const response = await fetch(`${TMDB_BASE_URL}/movie/latest?api_key=${TMDB_API_KEY}`);
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`TMDB API error: ${response.status} - ${errorText}`);
-        }
-        const movie = await response.json();
-
-        // Basic transformation to send only relevant data
-        const transformedMovie = {
-            id: movie.id,
-            title: movie.title,
-            overview: movie.overview,
-            poster_path: movie.poster_path ? `${TMDB_IMAGE_BASE_URL}${movie.poster_path}` : null,
-            backdrop_path: movie.backdrop_path ? `${TMDB_IMAGE_BASE_URL}${movie.backdrop_path}` : null,
-            release_date: movie.release_date
-        };
-
-        res.json(transformedMovie);
-    } catch (error) {
-        console.error('Error fetching latest movie from TMDB:', error.message);
-        next(error); // Pass to general error handler
+// Middleware to check for the TMDB API key before any route is hit
+router.use((req, res, next) => {
+    if (!TMDB_API_KEY) {
+        console.error('SERVER ERROR: TMDB_API_KEY is not set in environment variables!');
+        // Return a 500 error if the key is missing on the server side
+        return res.status(500).json({ message: 'Server configuration error: TMDB API key is missing. Please check your .env file.' });
     }
+    next(); // Proceed to the next middleware or route handler
 });
 
-// GET /api/public/movies/trending (for a list of trending movies)
-router.get('/trending', async (req, res, next) => {
+// GET /api/public/movies/trending: Get trending movies from TMDB
+router.get('/trending', async (req, res) => {
     try {
-        // You can specify time_window as 'day' or 'week'
-        const response = await fetch(`${TMDB_BASE_URL}/trending/movie/week?api_key=${TMDB_API_KEY}`);
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`TMDB API error: ${response.status} - ${errorText}`);
+        const url = `${TMDB_BASE_URL}/trending/movie/week?api_key=${TMDB_API_KEY}`;
+        console.log(`Backend fetching from: ${url}`); // <-- IMPORTANT: Check this URL in your server console!
+
+        const response = await fetch(url);
+
+        if (!response.ok) { // Check for non-2xx responses
+            const errorBody = await response.text(); // Get the raw error response
+            console.error(`TMDB API Error Response (Status ${response.status}): ${errorBody}`);
+            // Respond to frontend with specific error
+            return res.status(response.status).json({
+                message: `Failed to fetch trending movies: TMDB returned status ${response.status}. Details: ${errorBody}`
+            });
         }
+
         const data = await response.json();
-        const movies = data.results; // TMDB returns an array in 'results'
+        res.json(data.results); // TMDB trending always has a 'results' array
 
-        // Map and transform to send only necessary data to frontend
-        const transformedMovies = movies.map(movie => ({
-            id: movie.id,
-            title: movie.title,
-            overview: movie.overview,
-            poster_path: movie.poster_path ? `${TMDB_IMAGE_BASE_URL}${movie.poster_path}` : null,
-            backdrop_path: movie.backdrop_path ? `${TMDB_IMAGE_BASE_URL}${movie.backdrop_path}` : null,
-            release_date: movie.release_date,
-            vote_average: movie.vote_average
-        }));
-
-        res.json(transformedMovies);
     } catch (error) {
-        console.error('Error fetching trending movies from TMDB:', error.message);
-        next(error);
+        console.error('SERVER-SIDE NETWORK ERROR or unexpected issue:', error);
+        res.status(500).json({ message: 'An unexpected server error occurred while contacting TMDB.' });
     }
 });
+
+// GET /api/public/movies/latest (Example, if you have this endpoint)
+// Note: TMDB's /movie/latest endpoint usually returns a single movie, not a list.
+router.get('/latest', async (req, res) => {
+    try {
+        const url = `${TMDB_BASE_URL}/movie/latest?api_key=${TMDB_API_KEY}`;
+        console.log(`Attempting to fetch latest movie from: ${url}`);
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`Error response from TMDB (Status: ${response.status}): ${errorText}`);
+            return res.status(response.status).json({ message: `Failed to fetch latest movie: TMDB API returned an error (${response.status})` });
+        }
+
+        const data = await response.json();
+        res.json(data); // Returns the movie object directly
+
+    } catch (error) {
+        console.error('Network or unexpected error fetching latest movie:', error.message);
+        res.status(500).json({ message: 'Failed to fetch latest movie: An unexpected internal server error occurred.' });
+    }
+});
+
 
 module.exports = router;

@@ -7,18 +7,20 @@
     <link rel="stylesheet" href="style.css">
     </head>
 <body>
-    <header>
+<header>
         <h1>My Movie Collection</h1>
         <nav>
             <a href="index.html" class="nav-link">Home</a>
-            <a href="about.html" class="nav-link">About the App</a> <div class="auth-controls">
-                <button id="showRegisterFormBtn" class="auth-btn">Register</button>
-                <button id="showLoginFormBtn" class="auth-btn">Login</button>
+            <a href="about.html" class="nav-link">About the App</a>
+            <div class="auth-controls">
+                <a href="auth.html?form=register" id="showRegisterFormBtn" class="auth-btn">Register</a>
+                <a href="auth.html?form=login" id="showLoginFormBtn" class="auth-btn">Login</a>
                 <button id="logoutBtn" class="auth-btn" style="display: none;">Logout</button>
                 <span id="loggedInUser" class="user-info" style="display: none;"></span>
             </div>
         </nav>
     </header>
+
 
     <main>
         <section class="about-section">

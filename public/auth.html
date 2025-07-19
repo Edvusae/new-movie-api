@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Register - Movie Collection App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>My Movie Collection</h1>
+        <nav>
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="about.html" class="nav-link">About the App</a>
+            <div class="auth-controls">
+                <button id="showRegisterFormBtn" class="auth-btn">Register</button>
+                <button id="showLoginFormBtn" class="auth-btn">Login</button>
+                <button id="logoutBtn" class="auth-btn" style="display: none;">Logout</button>
+                <span id="loggedInUser" class="user-info" style="display: none;"></span>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="authForms" class="auth-forms-section active-form-page">
+            <h2 id="authFormTitle">Login</h2> <form id="registerForm" class="auth-form">
+                <input type="text" id="registerUsername" placeholder="Username" required>
+                <input type="email" id="registerEmail" placeholder="Email" required>
+                <input type="password" id="registerPassword" placeholder="Password" required>
+                <button type="submit">Register</button>
+                <p class="toggle-auth">Already have an account? <a href="#" id="switchToLogin">Login here</a></p>
+            </form>
+
+            <form id="loginForm" class="auth-form active-form">
+                <input type="email" id="loginEmail" placeholder="Email" required>
+                <input type="password" id="loginPassword" placeholder="Password" required>
+                <button type="submit">Login</button>
+                <p class="toggle-auth">Don't have an account? <a href="#" id="switchToRegister">Register here</a></p>
+            </form>
+
+            <p id="authMessage" class="message"></p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Movie Collection App. All rights reserved.</p>
+        <p>Data provided by <a href="https://www.themoviedb.org/" target="_blank">The Movie Database (TMDB)</a>.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
