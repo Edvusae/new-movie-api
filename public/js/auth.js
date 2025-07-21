@@ -1,8 +1,13 @@
 // public/js/auth.js
 
-// Import common functions (if common.js is set up as a module)
-// For now, assuming common.js functions are globally available after script inclusion
-// const { API_BASE, displayMessage, setAuthToken, parseJwt, checkAuthStatusHeader } = window; // Example if using global scope
+// Access common functions and variables from the global scope (window object)
+// Ensure common.js is loaded BEFORE this script in auth.html
+const API_BASE = window.API_BASE;
+const displayMessage = window.displayMessage;
+const setAuthToken = window.setAuthToken;
+const getAuthToken = window.getAuthToken; // Need getAuthToken for checkAuthStatusAuthPage
+const parseJwt = window.parseJwt;
+const handleLogout = window.handleLogout; // Need handleLogout in case session expires
 
 // UI Elements specific to auth.html
 let authFormsSection, authFormTitle, registerForm, loginForm, authMessage;
@@ -137,6 +142,8 @@ function checkAuthStatusAuthPage() {
 
 // --- Initial setup on auth.html load ---
 document.addEventListener('DOMContentLoaded', () => {
+    // These elements must exist in your auth.html for this script to work correctly.
+    // If any are missing, ensure you add them to your HTML.
     checkAuthStatusAuthPage(); // Update auth.html UI based on auth status
 
     // Add event listeners specific to auth.html

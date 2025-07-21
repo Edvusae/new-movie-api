@@ -371,3 +371,148 @@ document.addEventListener('DOMContentLoaded', () => {
         applySortButton.addEventListener('click', fetchAndDisplayMovies);
     }
 });
+
+// public/js/index.js
+
+// ... existing code ...
+
+// --- Function to Fetch and Display Public Movies from TMDB Proxy ---
+async function fetchAndDisplayPublicMovies() {
+    if (!publicMoviesMessage || !publicMovieListDiv) return;
+
+    publicMoviesMessage.style.display = 'none';
+    publicMovieListDiv.innerHTML = '';
+
+    try {
+        const response = await fetch(`${API_BASE}/api/public/movies/trending`);
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ message: 'Unknown error from server.' }));
+            throw new Error(`Failed to fetch trending movies: ${errorData.message || response.statusText}`);
+        }
+        const movies = await response.json();
+
+        if (movies.length === 0) {
+            publicMovieListDiv.innerHTML = '<p class="no-movies-message">No trending movies found at this time.</p>';
+            return;
+        }
+
+        // Check if user is logged in
+        const isLoggedIn = !!getAuthToken(); // getAuthToken is from common.js
+
+        movies.forEach(movie => {
+            const movieCard = document.createElement('div');
+            movieCard.className = 'movie-card';
+            const imageUrl = movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : 'https://via.placeholder.com/500x750?text=No+Poster';
+
+            // Extract year safely
+            const year = movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A';
+
+            movieCard.innerHTML = `
+                <img src="${imageUrl}" alt="${movie.title} Poster" style="width:100%; height:auto; border-radius: 4px; margin-bottom: 10px;">
+                <h3>${movie.title}</h3>
+                <p><strong>Release Date:</strong> ${movie.release_date || 'N/A'}</p>
+                <p><strong>Rating:</strong> ${movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A'}/10</p>
+                <p class="overview">${movie.overview ? movie.overview.substring(0, 100) + '...' : 'No overview available.'}</p>
+                <div class="actions" style="justify-content: center;">
+                    <a href="https://www.themoviedb.org/movie/${movie.id}" target="_blank" class="auth-btn" style="background-color: #6c757d;">View Details</a>
+                    ${isLoggedIn ? `
+                        <button
+                            data-title="${movie.title}"
+                            data-director="Unknown" // TMDB trending movies usually don't have director directly in this endpoint
+                            data-year="${year}"
+                            class="add-to-collection-btn auth-btn"
+                        >
+                            Add to My Collection
+                        </button>
+                    ` : ''}
+                </div>
+            `;
+            publicMovieListDiv.appendChild(movieCard);
+        });
+
+        // Attach event listeners for the new buttons if user is logged in
+        if (isLoggedIn) {
+            document.querySelectorAll('.add-to-collection-btn').forEach(button => {
+                button.addEventListener('click', handleAddToCollection);
+            });
+        }
+
+    } catch (error) {
+        console.error('Error fetching public movies:', error);
+        displayMessage(publicMoviesMessage, `Failed to load trending movies: ${error.message}`, 'error');
+    }
+}
+
+// ... existing code ...
+
+// --- Function to Handle Adding a Public Movie to User's Collection ---
+async function handleAddToCollection(event) {
+    const button = event.target;
+    // Disable button to prevent multiple clicks
+    button.disabled = true;
+    button.textContent = 'Adding...';
+
+    const title = button.dataset.title;
+    const director = button.dataset.director; // This will likely be "Unknown" for TMDB trending
+    const year = parseInt(button.dataset.year, 10);
+
+    if (!title || !director || isNaN(year)) {
+        displayMessage(publicMoviesMessage, 'Error: Missing movie data to add.', 'error');
+        button.disabled = false;
+        button.textContent = 'Add to My Collection';
+        return;
+    }
+
+    const token = getAuthToken();
+    if (!token) {
+        displayMessage(publicMoviesMessage, 'You must be logged in to add movies.', 'error');
+        button.disabled = false;
+        button.textContent = 'Add to My Collection';
+        window.location.href = 'auth.html?form=login';
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE}/movies/add-from-public`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ title, director, year })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            if (response.status === 401) {
+                handleLogout();
+                displayMessage(publicMoviesMessage, 'Session expired. Please log in again.', 'error');
+                return;
+            }
+            displayMessage(publicMoviesMessage, data.message || 'Failed to add movie to collection.', 'error');
+        } else {
+            displayMessage(publicMoviesMessage, data.message, 'success');
+            // Optional: You could update the button text to "Added!" or remove it
+            button.textContent = 'Added!';
+            button.style.backgroundColor = '#28a745'; // Green for added
+            button.style.cursor = 'default';
+
+            // If on index.html and logged in, refresh private movie list
+            // This will only happen if the user logs in and then returns to index.html,
+            // or if they navigate to index.html while logged in.
+            if (movieListingSection && movieListingSection.style.display === 'block') {
+                fetchAndDisplayMovies();
+            }
+        }
+    } catch (error) {
+        console.error('Error adding movie to collection:', error);
+        displayMessage(publicMoviesMessage, 'An unexpected error occurred while adding movie.', 'error');
+    } finally {
+        // Re-enable button if it's not "Added!"
+        if (button.textContent !== 'Added!') {
+             button.disabled = false;
+             button.textContent = 'Add to My Collection';
+        }
+    }
+} 

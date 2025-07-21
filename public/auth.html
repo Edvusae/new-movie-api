@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login / Register - MovieVault</title>
+    <title>Auth - Movie API</title>
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/components.css">
@@ -12,15 +12,17 @@
 </head>
 <body>
     <header>
+        <h1 class="logo">MovieDB</h1>
         <nav>
-            <div class="logo">MovieVault</div>
             <div class="nav-links">
-                <a href="index.html">Home</a>
-                <a href="about.html">About</a>
-                <a href="auth.html?form=register" id="showRegisterFormBtn" style="display: none;">Register</a>
-                <a href="auth.html?form=login" id="showLoginFormBtn" style="display: none;">Login</a>
-                <span id="loggedInUser" style="display: none;"></span>
-                <button id="logoutBtn" style="display: none;">Logout</button>
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link">About</a>
+            </div>
+            <div class="auth-controls">
+                <span id="userInfo" class="user-info" style="display: none;"></span>
+                <a href="auth.html?form=login" id="loginLink" class="auth-btn">Login</a>
+                <a href="auth.html?form=register" id="registerLink" class="auth-btn">Register</a>
+                <button id="logoutBtn" class="auth-btn" style="display: none;">Logout</button>
             </div>
         </nav>
     </header>
@@ -28,14 +30,14 @@
     <main>
         <section id="authForms" class="auth-container">
             <h2 id="authFormTitle">Login</h2>
-            <p id="authMessage" class="message"></p>
+            <div id="authMessage" class="message" style="display: none;"></div>
 
             <form id="loginForm" class="auth-form active-form">
                 <h3>Login to your account</h3>
                 <input type="email" id="loginEmail" placeholder="Email" required>
                 <input type="password" id="loginPassword" placeholder="Password" required>
-                <button type="submit" class="auth-btn">Login</button>
-                <p>Don't have an account? <a href="#" id="switchToRegister">Register here</a></p>
+                <button type="submit">Login</button>
+                <p class="toggle-auth">Don't have an account? <a href="#" id="switchToRegister">Register here</a></p>
             </form>
 
             <form id="registerForm" class="auth-form">
@@ -43,17 +45,15 @@
                 <input type="text" id="registerUsername" placeholder="Username" required>
                 <input type="email" id="registerEmail" placeholder="Email" required>
                 <input type="password" id="registerPassword" placeholder="Password" required>
-                <button type="submit" class="auth-btn">Register</button>
-                <p>Already have an account? <a href="#" id="switchToLogin">Login here</a></p>
+                <button type="submit">Register</button>
+                <p class="toggle-auth">Already have an account? <a href="#" id="switchToLogin">Login here</a></p>
             </form>
         </section>
     </main>
 
     <footer>
-        <p>&copy; 2025 MovieVault. All rights reserved.</p>
+        <p>&copy; 2025 Movie API. All rights reserved.</p>
     </footer>
 
-    <script src="js/common.js"></script>
-    <script src="js/auth.js"></script>
-</body>
+    <script src="js/common.js"></script> <script src="js/auth.js"></script>   </body>
 </html>

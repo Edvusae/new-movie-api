@@ -1,12 +1,28 @@
 // models/Movie.js
-
 const mongoose = require('mongoose');
 
-const movieSchema = new mongoose.Schema({
-    title: { type: String, required: true },
-    director: { type: String, required: true },
-    year: { type: Number, required: true }
+const MovieSchema = new mongoose.Schema({
+    title: {
+        type: String,
+        required: true
+    },
+    director: {
+        type: String,
+        required: true
+    },
+    year: {
+        type: Number,
+        required: true
+    },
+    user: { // Link to the User model
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    dateAdded: {
+        type: Date,
+        default: Date.now
+    }
 });
 
-// Export the Movie model
-module.exports = mongoose.model('Movie', movieSchema);
+module.exports = mongoose.model('Movie', MovieSchema);

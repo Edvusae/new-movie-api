@@ -11,9 +11,10 @@ const logger = require('./middleware/logger');
 const errorHandler = require('./middleware/errorHandler');
 const movieRoutes = require('./routes/movieRoutes');
 const authRoutes = require('./routes/authRoutes');
+
 // --- Import your new publicMovieRoutes ---
 const publicMovieRoutes = require('./routes/publicMovieRoutes'); // NEW IMPORT
-
+// Ensure MONGODB_URI is defined in your .env file
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
