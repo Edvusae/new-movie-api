@@ -3,50 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login / Register - Movie Collection App</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Login / Register - MovieVault</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <header>
-        <h1>My Movie Collection</h1>
         <nav>
-            <a href="index.html" class="nav-link">Home</a>
-            <a href="about.html" class="nav-link">About the App</a>
-            <div class="auth-controls">
-                <button id="showRegisterFormBtn" class="auth-btn">Register</button>
-                <button id="showLoginFormBtn" class="auth-btn">Login</button>
-                <button id="logoutBtn" class="auth-btn" style="display: none;">Logout</button>
-                <span id="loggedInUser" class="user-info" style="display: none;"></span>
+            <div class="logo">MovieVault</div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="auth.html?form=register" id="showRegisterFormBtn" style="display: none;">Register</a>
+                <a href="auth.html?form=login" id="showLoginFormBtn" style="display: none;">Login</a>
+                <span id="loggedInUser" style="display: none;"></span>
+                <button id="logoutBtn" style="display: none;">Logout</button>
             </div>
         </nav>
     </header>
 
     <main>
-        <section id="authForms" class="auth-forms-section active-form-page">
-            <h2 id="authFormTitle">Login</h2> <form id="registerForm" class="auth-form">
+        <section id="authForms" class="auth-container">
+            <h2 id="authFormTitle">Login</h2>
+            <p id="authMessage" class="message"></p>
+
+            <form id="loginForm" class="auth-form active-form">
+                <h3>Login to your account</h3>
+                <input type="email" id="loginEmail" placeholder="Email" required>
+                <input type="password" id="loginPassword" placeholder="Password" required>
+                <button type="submit" class="auth-btn">Login</button>
+                <p>Don't have an account? <a href="#" id="switchToRegister">Register here</a></p>
+            </form>
+
+            <form id="registerForm" class="auth-form">
+                <h3>Create a new account</h3>
                 <input type="text" id="registerUsername" placeholder="Username" required>
                 <input type="email" id="registerEmail" placeholder="Email" required>
                 <input type="password" id="registerPassword" placeholder="Password" required>
-                <button type="submit">Register</button>
-                <p class="toggle-auth">Already have an account? <a href="#" id="switchToLogin">Login here</a></p>
+                <button type="submit" class="auth-btn">Register</button>
+                <p>Already have an account? <a href="#" id="switchToLogin">Login here</a></p>
             </form>
-
-            <form id="loginForm" class="auth-form active-form">
-                <input type="email" id="loginEmail" placeholder="Email" required>
-                <input type="password" id="loginPassword" placeholder="Password" required>
-                <button type="submit">Login</button>
-                <p class="toggle-auth">Don't have an account? <a href="#" id="switchToRegister">Register here</a></p>
-            </form>
-
-            <p id="authMessage" class="message"></p>
         </section>
     </main>
 
     <footer>
-        <p>&copy; 2025 Movie Collection App. All rights reserved.</p>
-        <p>Data provided by <a href="https://www.themoviedb.org/" target="_blank">The Movie Database (TMDB)</a>.</p>
+        <p>&copy; 2025 MovieVault. All rights reserved.</p>
     </footer>
 
-    <script src="script.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/auth.js"></script>
 </body>
 </html>
