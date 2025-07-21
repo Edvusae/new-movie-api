@@ -1,0 +1,17 @@
+/* public/css/media-queries.css */
+
+/* Add your responsive design rules here */
+/* Example:
+@media (max-width: 768px) {
+    main {
+        padding: 15px;
+        margin: 15px auto;
+    }
+    .nav-links {
+        flex-direction: column;
+    }
+    .movie-list-grid {
+        grid-template-columns: 1fr;
+    }
+}
+*/

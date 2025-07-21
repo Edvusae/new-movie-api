@@ -1,0 +1,118 @@
+/* public/css/components.css */
+
+/* ---------------------------------------------------
+   Navigation & Authentication Controls
+   --------------------------------------------------- */
+header nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px; /* Increased gap for better spacing */
+}
+
+.nav-links { /* The container for header links */
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Consistent spacing */
+}
+
+.nav-links a { /* Specific style for nav links */
+    color: #ecf0f1;
+    text-decoration: none;
+    padding: 10px 18px; /* Slightly larger clickable area */
+    border-radius: 5px; /* Softer border-radius */
+    transition: background 0.3s ease; /* Smoother transition */
+    font-weight: 500; /* Slightly bolder */
+}
+
+.nav-links a:hover {
+    background: #34495e; /* Darker hover background */
+}
+
+.auth-btn, .btn { /* General button styles */
+    background: #28a745; /* Bootstrap-like green for primary actions */
+    color: #fff;
+    padding: 9px 16px; /* Consistent padding */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background 0.3s ease, transform 0.1s ease; /* Added transform for subtle click effect */
+    text-decoration: none;
+    display: inline-block;
+    font-weight: 500;
+    line-height: 1.2; /* Better vertical alignment for text */
+}
+
+.auth-btn:hover, .btn:hover {
+    background: #218838;
+    transform: translateY(-1px); /* Subtle lift on hover */
+}
+.auth-btn:active, .btn:active {
+    transform: translateY(0); /* Reset on click */
+}
+
+/* Specific button styles - Keep these for overrides */
+#logoutBtn {
+    background: #dc3545; /* Red for destructive action */
+}
+#logoutBtn:hover {
+    background: #c82333;
+}
+
+/* Muted gray for secondary actions (Search, Clear, Apply Sort) */
+.btn {
+    background: #6c757d;
+}
+.btn:hover {
+    background: #5a6268;
+}
+
+.user-info { /* Renamed from .user-info to match actual element ID if it existed, otherwise keep as class */
+    color: #fff;
+    font-weight: 600; /* Bolder for user info */
+    padding: 9px 16px;
+    background: rgba(255, 255, 255, 0.15); /* Slightly less opaque */
+    border-radius: 5px;
+    font-size: 0.9rem;
+    white-space: nowrap; /* Prevent wrapping for username */
+}
+
+/* ---------------------------------------------------
+   Controls (Search & Sort)
+   --------------------------------------------------- */
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* More space between control groups */
+    justify-content: center;
+    align-items: flex-end;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f0f4f7; /* Lighter background for controls */
+    border-radius: 8px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+}
+
+.search-container, .sort-container {
+    display: flex;
+    gap: 10px; /* Consistent spacing within containers */
+    align-items: center;
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+}
+
+.search-container input,
+.sort-container select {
+    padding: 10px 14px; /* More padding */
+    border: 1px solid #bbb;
+    border-radius: 5px;
+    font-size: 1rem;
+    min-width: 150px; /* Ensure a minimum width */
+}
+
+.search-container input:focus,
+.sort-container select:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}

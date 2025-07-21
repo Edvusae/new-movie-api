@@ -1,0 +1,122 @@
+/* public/css/forms.css */
+
+/* ---------------------------------------------------
+   Authentication Forms (Specific to auth.html)
+   --------------------------------------------------- */
+.auth-container { /* Renamed from .auth-forms-section to be more semantically correct for a container */
+    text-align: center;
+    /* Ensure this section is displayed if it's on auth.html, no need for display:block here */
+}
+
+.auth-form {
+    display: none; /* Controlled by JS via .active-form */
+    flex-direction: column;
+    gap: 18px; /* More space between inputs */
+    max-width: 400px; /* Slightly wider forms */
+    margin: 30px auto; /* More margin */
+    padding: 35px; /* More padding */
+    border: 1px solid #dcdcdc; /* Lighter border */
+    border-radius: 10px; /* Softer corners */
+    background: #fff;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1); /* More pronounced shadow */
+}
+
+.auth-form.active-form {
+    display: flex;
+}
+
+.auth-form input[type="text"],
+.auth-form input[type="email"],
+.auth-form input[type="password"] {
+    padding: 12px; /* More padding for inputs */
+    border: 1px solid #c0c0c0; /* Softer border */
+    border-radius: 6px; /* Softer corners */
+    font-size: 1.05rem; /* Slightly larger font */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05); /* Subtle inner shadow */
+}
+
+.auth-form input[type="text"]:focus,
+.auth-form input[type="email"]:focus,
+.auth-form input[type="password"]:focus {
+    border-color: #3498db; /* Focus highlight */
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2); /* Soft glow */
+}
+
+.auth-form button[type="submit"] {
+    background: #3498db; /* Blue for submit actions */
+    color: #fff;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.15rem;
+    transition: background 0.3s ease, transform 0.1s ease;
+    font-weight: 600;
+}
+
+.auth-form button[type="submit"]:hover {
+    background: #2980b9;
+    transform: translateY(-1px);
+}
+.auth-form button[type="submit"]:active {
+    transform: translateY(0);
+}
+
+.toggle-auth {
+    font-size: 0.95em; /* Slightly larger */
+    color: #7f8c8d; /* Softer gray */
+    margin-top: 20px; /* More margin */
+}
+
+.toggle-auth a {
+    color: #3498db; /* Consistent link color */
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.toggle-auth a:hover {
+    text-decoration: underline;
+}
+
+/* ---------------------------------------------------
+   Movie Form (Add/Edit)
+   --------------------------------------------------- */
+#movieForm {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px; /* Consistent gap */
+    margin-bottom: 25px; /* More margin */
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background: #f8fcfd; /* Light background for the form */
+    border-radius: 8px;
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.03); /* Subtle inset shadow */
+}
+
+#movieForm input {
+    flex: 1 1 220px; /* Allow inputs to grow slightly more */
+    padding: 11px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+#movieForm input:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+#movieForm button {
+    background: #007bff; /* Primary blue for add/update */
+    color: #fff;
+    padding: 11px 20px;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: 600;
+}
+#movieForm button:hover {
+    background: #0056b3;
+}
