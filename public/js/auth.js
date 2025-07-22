@@ -1,15 +1,8 @@
 // public/js/auth.js
 
-// Access common functions and variables from the global scope (window object)
-// Ensure common.js is loaded BEFORE this script in auth.html
-const API_BASE = window.API_BASE;
-const displayMessage = window.displayMessage;
-const setAuthToken = window.setAuthToken;
-const getAuthToken = window.getAuthToken; // Need getAuthToken for checkAuthStatusAuthPage
-const parseJwt = window.parseJwt;
-const handleLogout = window.handleLogout; // Need handleLogout in case session expires
-
 // UI Elements specific to auth.html
+// These are still 'let' because they are assigned inside DOMContentLoaded
+// and are specific to this page's DOM.
 let authFormsSection, authFormTitle, registerForm, loginForm, authMessage;
 let registerUsernameInput, registerEmailInput, registerPasswordInput;
 let loginEmailInput, loginPasswordInput;
@@ -17,8 +10,14 @@ let switchToLoginLink, switchToRegisterLink;
 
 
 // --- Function to toggle between login and register forms ---
+// This function is specific to auth.html, so it remains local to this file.
 function showAuthForm(formType) {
-    if (!authFormsSection || !registerForm || !loginForm) return;
+    // Use App.displayMessage for any messages here if needed,
+    // though this function primarily controls form visibility.
+    if (!authFormsSection || !registerForm || !loginForm) {
+        console.error("Auth form elements not found. Cannot show form.");
+        return;
+    }
 
     registerForm.classList.remove('active-form');
     loginForm.classList.remove('active-form');
@@ -26,26 +25,26 @@ function showAuthForm(formType) {
     if (formType === 'register') {
         registerForm.classList.add('active-form');
         authFormTitle.textContent = 'Register';
-    } else {
+    } else { // Default to 'login'
         loginForm.classList.add('active-form');
         authFormTitle.textContent = 'Login';
     }
-    authMessage.style.display = 'none';
+    authMessage.style.display = 'none'; // Clear any previous auth messages when switching forms
 }
 
 // --- Handle User Registration ---
 async function handleRegister(event) {
-    event.preventDefault();
+    event.preventDefault(); // Prevent default form submission
     if (!authMessage) return;
 
-    authMessage.style.display = 'none';
+    authMessage.style.display = 'none'; // Hide previous messages
 
     const username = registerUsernameInput.value.trim();
     const email = registerEmailInput.value.trim();
     const password = registerPasswordInput.value;
 
     try {
-        const response = await fetch(`${API_BASE}/api/auth/register`, {
+        const response = await fetch(`${App.API_BASE}/api/auth/register`, { // Use App.API_BASE
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -56,31 +55,32 @@ async function handleRegister(event) {
         const data = await response.json();
 
         if (!response.ok) {
+            // Construct error message from backend response
             const errorMessage = data.errors ? data.errors.map(err => err.msg).join('\n') : data.message || 'Registration failed.';
-            displayMessage(authMessage, errorMessage, 'error');
+            App.displayMessage(authMessage, errorMessage, 'error'); // Use App.displayMessage
         } else {
-            displayMessage(authMessage, data.message, 'success');
-            registerForm.reset();
+            App.displayMessage(authMessage, data.message, 'success'); // Use App.displayMessage
+            registerForm.reset(); // Clear form fields
             showAuthForm('login'); // Switch to login form after successful registration
         }
     } catch (error) {
         console.error('Error during registration:', error);
-        displayMessage(authMessage, 'An error occurred during registration. Please try again later.', 'error');
+        App.displayMessage(authMessage, 'An error occurred during registration. Please try again later.', 'error'); // Use App.displayMessage
     }
 }
 
 // --- Handle User Login ---
 async function handleLogin(event) {
-    event.preventDefault();
+    event.preventDefault(); // Prevent default form submission
     if (!authMessage) return;
 
-    authMessage.style.display = 'none';
+    authMessage.style.display = 'none'; // Hide previous messages
 
     const email = loginEmailInput.value.trim();
     const password = loginPasswordInput.value;
 
     try {
-        const response = await fetch(`${API_BASE}/api/auth/login`, {
+        const response = await fetch(`${App.API_BASE}/api/auth/login`, { // Use App.API_BASE
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -91,36 +91,38 @@ async function handleLogin(event) {
         const data = await response.json();
 
         if (!response.ok) {
-            displayMessage(authMessage, data.message || 'Login failed. Invalid credentials.', 'error');
+            App.displayMessage(authMessage, data.message || 'Login failed. Invalid credentials.', 'error'); // Use App.displayMessage
         } else {
-            setAuthToken(data.token);
-            const decodedPayload = parseJwt(data.token);
+            App.setAuthToken(data.token); // Use App.setAuthToken
+            const decodedPayload = App.parseJwt(data.token); // Use App.parseJwt
             if (decodedPayload && decodedPayload.user) {
                 localStorage.setItem('loggedInUsername', decodedPayload.user.username);
                 localStorage.setItem('loggedInUserRole', decodedPayload.user.role);
             }
 
-            displayMessage(authMessage, data.message, 'success');
-            loginForm.reset();
+            App.displayMessage(authMessage, data.message, 'success'); // Use App.displayMessage
+            loginForm.reset(); // Clear form fields
             // Redirect to home page after successful login
             window.location.href = 'index.html';
         }
     } catch (error) {
         console.error('Error during login:', error);
-        displayMessage(authMessage, 'An error occurred during login. Please try again later.', 'error');
+        App.displayMessage(authMessage, 'An error occurred during login. Please try again later.', 'error'); // Use App.displayMessage
     }
 }
 
 // --- Function to check authentication status and update auth.html UI ---
+// This runs when auth.html loads. If already logged in, it redirects.
 function checkAuthStatusAuthPage() {
-    const token = getAuthToken();
+    const token = App.getAuthToken(); // Use App.getAuthToken
     if (token) {
         // If user somehow lands on auth.html while logged in, redirect them
         window.location.href = 'index.html';
         return;
     }
 
-    // Re-assign local vars for current page
+    // Assign UI elements specific to auth.html once DOM is ready
+    // These assignments MUST happen after DOMContentLoaded
     authFormsSection = document.getElementById('authForms');
     authFormTitle = document.getElementById('authFormTitle');
     registerForm = document.getElementById('registerForm');
@@ -142,11 +144,10 @@ function checkAuthStatusAuthPage() {
 
 // --- Initial setup on auth.html load ---
 document.addEventListener('DOMContentLoaded', () => {
-    // These elements must exist in your auth.html for this script to work correctly.
-    // If any are missing, ensure you add them to your HTML.
-    checkAuthStatusAuthPage(); // Update auth.html UI based on auth status
+    // Call the page-specific auth status check
+    checkAuthStatusAuthPage();
 
-    // Add event listeners specific to auth.html
+    // Attach event listeners specific to auth.html after elements are assigned
     if (registerForm) {
         registerForm.addEventListener('submit', handleRegister);
     }
@@ -155,13 +156,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (switchToLoginLink) {
         switchToLoginLink.addEventListener('click', (e) => {
-            e.preventDefault();
+            e.preventDefault(); // Prevent default link behavior
             showAuthForm('login');
         });
     }
     if (switchToRegisterLink) {
         switchToRegisterLink.addEventListener('click', (e) => {
-            e.preventDefault();
+            e.preventDefault(); // Prevent default link behavior
             showAuthForm('register');
         });
     }

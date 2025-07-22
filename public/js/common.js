@@ -1,16 +1,14 @@
 // public/js/common.js
 
-// API Base URL (adjust if your backend is not on localhost:3000 in production)
-const API_BASE = 'http://localhost:3000';
+// Initialize a global application namespace if it doesn't exist
+// This object will hold all common functions and variables
+window.App = window.App || {};
 
-// Global header UI elements (present on all pages)
-const showRegisterFormBtn = document.getElementById('showRegisterFormBtn');
-const showLoginFormBtn = document.getElementById('showLoginFormBtn');
-const logoutBtn = document.getElementById('logoutBtn');
-const loggedInUserSpan = document.getElementById('loggedInUser');
+// --- API Base URL ---
+window.App.API_BASE = 'http://localhost:3000'; // Expose API_BASE via App namespace
 
 // --- Helper for UI Messages (reusable) ---
-function displayMessage(element, message, type) {
+window.App.displayMessage = function(element, message, type) {
     if (!element) return;
     element.textContent = message;
     element.className = `message ${type}`;
@@ -22,75 +20,78 @@ function displayMessage(element, message, type) {
             element.className = 'message';
         }
     }, 5000);
-}
+};
 
 // --- Helper to get JWT from Local Storage (reusable) ---
-function getAuthToken() {
+window.App.getAuthToken = function() {
     return localStorage.getItem('jwtToken');
-}
+};
 
 // --- Helper to set JWT to Local Storage (reusable) ---
-function setAuthToken(token) {
+window.App.setAuthToken = function(token) {
     localStorage.setItem('jwtToken', token);
-}
+};
 
 // --- Helper to remove JWT from Local Storage (reusable) ---
-function removeAuthToken() {
+window.App.removeAuthToken = function() {
     localStorage.removeItem('jwtToken');
     localStorage.removeItem('loggedInUsername');
     localStorage.removeItem('loggedInUserRole');
-}
+};
 
 // --- Helper to parse JWT (reusable) ---
-function parseJwt(token) {
+window.App.parseJwt = function(token) {
     try {
         return JSON.parse(atob(token.split('.')[1]));
     } catch (e) {
         console.error("Error parsing JWT:", e);
         return null;
     }
-}
+};
 
 // --- Function to handle user logout (reusable) ---
-function handleLogout() {
-    removeAuthToken(); // Clears localStorage
-    // No need to call checkAuthStatus here directly to update specific page content.
-    // The redirect will cause the new page's script to run checkAuthStatus.
+window.App.handleLogout = function() {
+    window.App.removeAuthToken(); // Use App.removeAuthToken
     window.location.href = 'index.html'; // Always redirect to home page after logout
-}
+};
 
 // --- Function to check authentication status and update GLOBAL UI (header) ---
-function checkAuthStatusHeader() {
-    const token = getAuthToken();
+window.App.checkAuthStatusHeader = function() {
+    // Global header UI elements
+    const showRegisterFormBtn = document.getElementById('showRegisterFormBtn');
+    const showLoginFormBtn = document.getElementById('showLoginFormBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const loggedInUserSpan = document.getElementById('loggedInUser');
+
+    const token = window.App.getAuthToken(); // Use App.getAuthToken
     const username = localStorage.getItem('loggedInUsername');
     const role = localStorage.getItem('loggedInUserRole');
 
     if (token && username && role) {
-        showRegisterFormBtn.style.display = 'none';
-        showLoginFormBtn.style.display = 'none';
-        logoutBtn.style.display = 'inline-block';
-        loggedInUserSpan.textContent = `Logged in as: ${username} (${role})`;
-        loggedInUserSpan.style.display = 'inline-block';
+        if (showRegisterFormBtn) showRegisterFormBtn.style.display = 'none';
+        if (showLoginFormBtn) showLoginFormBtn.style.display = 'none';
+        if (logoutBtn) logoutBtn.style.display = 'inline-block';
+        if (loggedInUserSpan) {
+            loggedInUserSpan.textContent = `Logged in as: ${username} (${role})`;
+            loggedInUserSpan.style.display = 'inline-block';
+        }
     } else {
-        showRegisterFormBtn.style.display = 'inline-block';
-        showLoginFormBtn.style.display = 'inline-block';
-        logoutBtn.style.display = 'none';
-        loggedInUserSpan.style.display = 'none';
-        loggedInUserSpan.textContent = '';
+        if (showRegisterFormBtn) showRegisterFormBtn.style.display = 'inline-block';
+        if (showLoginFormBtn) showLoginFormBtn.style.display = 'inline-block';
+        if (logoutBtn) logoutBtn.style.display = 'none';
+        if (loggedInUserSpan) {
+            loggedInUserSpan.style.display = 'none';
+            loggedInUserSpan.textContent = '';
+        }
     }
-}
+};
 
-// Attach event listeners for common elements
+// Attach event listeners for common elements on DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
-    checkAuthStatusHeader(); // Update header on every page load
-    if (logoutBtn) { // Ensure button exists before adding listener
-        logoutBtn.addEventListener('click', handleLogout);
-    }
-    // showRegisterFormBtn and showLoginFormBtn are likely <a> tags that navigate
-    // so no need for explicit click listeners here unless they do more than navigate.
-});
+    window.App.checkAuthStatusHeader(); // Call via App namespace
 
-// Export functions for use in other modules (if using type="module")
-// For now, let's keep them globally accessible by just declaring them.
-// If you transition to ES Modules later, you'd add:
-// export { API_BASE, displayMessage, getAuthToken, setAuthToken, removeAuthToken, parseJwt, handleLogout, checkAuthStatusHeader };
+    const logoutBtn = document.getElementById('logoutBtn'); // Re-select here to ensure it's found
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', window.App.handleLogout); // Call via App namespace
+    }
+});
