@@ -5,7 +5,7 @@
 window.App = window.App || {};
 
 // --- API Base URL ---
-window.App.API_BASE = 'http://localhost:3000'; // Expose API_BASE via App namespace
+window.App.API_BASE = 'https://new-movie-api.onrender.com'; // Expose API_BASE via App namespace
 
 // --- Helper for UI Messages (reusable) ---
 window.App.displayMessage = function(element, message, type) {
