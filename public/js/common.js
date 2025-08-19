@@ -1,6 +1,4 @@
 // public/js/common.js
-
-// Initialize a global application namespace if it doesn't exist
 // This object will hold all common functions and variables
 window.App = window.App || {};
 
