@@ -107,7 +107,7 @@ header nav {
     border: 1px solid #bbb;
     border-radius: 5px;
     font-size: 1rem;
-    min-width: 150px; /* Ensure a minimum width */
+    min-width: 150px;
 }
 
 .search-container input:focus,

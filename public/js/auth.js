@@ -28,20 +28,31 @@ function showAuthForm(formType) {
         loginForm.classList.add('active-form');
         authFormTitle.textContent = 'Login';
     }
-    authMessage.style.display = 'none'; // Clear any previous auth messages when switching forms
+    // Clear any previous auth messages when switching forms
+    authMessage.style.display = 'none';
 }
 
 // --- Handle User Registration ---
 async function handleRegister(event) {
-    event.preventDefault(); // Prevent default form submission
+    // Prevent default form submission
+    event.preventDefault();
     if (!authMessage) return;
 
-    authMessage.style.display = 'none'; // Hide previous messages
+    // Clear any previous auth messages
+    authMessage.style.display = 'none';
 
+    // Get user input values
     const username = registerUsernameInput.value.trim();
     const email = registerEmailInput.value.trim();
     const password = registerPasswordInput.value;
 
+    // Validate user input
+    if (!username || !email || !password) {
+        App.displayMessage(authMessage, 'Please fill in all fields.', 'error'); // Use App.displayMessage
+        return;
+    }
+
+    // Send registration request
     try {
         const response = await fetch(`${App.API_BASE}/api/auth/register`, { // Use App.API_BASE
             method: 'POST',
@@ -53,6 +64,7 @@ async function handleRegister(event) {
 
         const data = await response.json();
 
+        // Check for validation errors
         if (!response.ok) {
             // Constructing error message from backend response
             const errorMessage = data.errors ? data.errors.map(err => err.msg).join('\n') : data.message || 'Registration failed.';
@@ -97,7 +109,7 @@ async function handleLogin(event) {
         // Parse the JSON response
         const data = await response.json();
 
-        // Check if response is okay
+        // Check for validation errors
         if (!response.ok) {
             App.displayMessage(authMessage, data.message || 'Login failed. Invalid credentials.', 'error'); // Use App.displayMessage
         } else {
@@ -106,7 +118,7 @@ async function handleLogin(event) {
             App.setAuthToken(data.token);
 
             // Decode the JWT to get user information
-            const decodedPayload = App.parseJwt(data.token); // Use App.parseJwt
+            const decodedPayload = App.parseJwt(data.token);
 
             // If user information is present in the token, store it
             if (decodedPayload && decodedPayload.user) {
