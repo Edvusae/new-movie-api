@@ -6,11 +6,14 @@ window.App = window.App || {};
 window.App.API_BASE = 'https://new-movie-api.onrender.com'; // Expose API_BASE via App namespace
 
 // --- Helper for UI Messages (reusable) ---
+// A generic function to display messages to the user
 window.App.displayMessage = function(element, message, type) {
+    // Check if element exists
     if (!element) return;
     element.textContent = message;
     element.className = `message ${type}`;
     element.style.display = 'block';
+    // Clear message after timeout
     setTimeout(() => {
         if (element) {
             element.style.display = 'none';
@@ -21,18 +24,19 @@ window.App.displayMessage = function(element, message, type) {
 };
 
 // --- Helper to get JWT from Local Storage (reusable) ---
-window.App.getAuthToken = function() {
-    return localStorage.getItem('jwtToken');
+// A generic function to get items from Local Storage
+window.App.getItem = function(key) {
+    return localStorage.getItem(key);
 };
 
 // --- Helper to set JWT to Local Storage (reusable) ---
-window.App.setAuthToken = function(token) {
-    localStorage.setItem('jwtToken', token);
+window.App.setItem = function(key, value) {
+    localStorage.setItem(key, value);
 };
 
 // --- Helper to remove JWT from Local Storage (reusable) ---
-window.App.removeAuthToken = function() {
-    localStorage.removeItem('jwtToken');
+window.App.removeItem = function(key) {
+    localStorage.removeItem(key);
     localStorage.removeItem('loggedInUsername');
     localStorage.removeItem('loggedInUserRole');
 };
