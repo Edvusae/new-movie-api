@@ -15,3 +15,37 @@
     }
 }
 */
+/* Example for smaller screens */
+@media (max-width: 768px) {
+    main {
+        padding: 15px;
+        margin: 15px auto;
+    }
+    .nav-links {
+        flex-direction: column;
+    }
+    .movie-list-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Example for very small screens */
+@media (max-width: 480px) { 
+    header h1 {
+        font-size: 1.5em;
+    }
+    .movie-card {
+        padding: 10px;
+    }
+    .movie-card img {
+        width: 100%;
+        height: auto;
+    }
+}
+
+/* Add more media queries as needed */
+@media (max-width: 1024px) {
+    .movie-list-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
