@@ -105,3 +105,24 @@ h2 {
     justify-content: center;
     flex-wrap: wrap; /* Allow buttons to wrap */
 }
+.movie-card .actions button {
+    background: #3498db;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.3s ease;
+}
+
+.movie-card .actions button:hover {
+    background: #2980b9;
+}
+.movie-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}   
