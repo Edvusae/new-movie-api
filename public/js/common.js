@@ -1,4 +1,3 @@
-// public/js/common.js
 // This object will hold all common functions and variables
 window.App = window.App || {};
 
@@ -107,13 +106,16 @@ window.App.checkAuthStatusHeader = function() {
 
 // Attach event listeners for common elements on DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
+
     // Check auth status and update header UI
-    window.App.checkAuthStatusHeader(); // Call via App namespace
+    window.App.checkAuthStatusHeader();
+
     // Attach logout event listener
-    const logoutBtn = document.getElementById('logoutBtn'); // Re-select here to ensure it's found
+    const logoutBtn = document.getElementById('logoutBtn');
+
     // Re-select here to ensure it's found
     if (logoutBtn) {
         // Attach click event listener
-        logoutBtn.addEventListener('click', window.App.handleLogout); // Call via App namespace
+        logoutBtn.addEventListener('click', window.App.handleLogout);
     }
 });
