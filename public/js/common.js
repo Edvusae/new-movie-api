@@ -1,23 +1,18 @@
+// public/js/common.js
 // This object will hold all common functions and variables
 window.App = window.App || {};
 
 // --- API Base URL ---
-window.App.API_BASE = 'https://new-movie-api.onrender.com'; // Expose API_BASE via App namespace
+window.App.API_BASE = 'http://localhost:3000'; // Change to production URL when deploying
 
 // --- Helper for UI Messages (reusable) ---
-// A generic function to display messages to the user
 window.App.displayMessage = function(element, message, type) {
-    // Check if element exists
     if (!element) return;
-    // Set message and style
     element.textContent = message;
-    // Set class based on type (e.g., 'error', 'success')
     element.className = `message ${type}`;
-    // Make sure the message is visible
     element.style.display = 'block';
-    // Clear message after timeout
+    
     setTimeout(() => {
-        // Ensure element still exists before modifying
         if (element) {
             element.style.display = 'none';
             element.textContent = '';
@@ -26,74 +21,67 @@ window.App.displayMessage = function(element, message, type) {
     }, 5000);
 };
 
-// --- Helper to get JWT from Local Storage (reusable) ---
-// A generic function to get items from Local Storage
-window.App.getItem = function(key) {
-    // Check if key is valid
-    return localStorage.getItem(key);
+// --- JWT Token Management ---
+window.App.getAuthToken = function() {
+    return localStorage.getItem('authToken');
 };
 
-// --- Helper to set JWT to Local Storage (reusable) ---
-window.App.setItem = function(key, value) {
-    // Check if key and value are valid
-    if (key && value) {
-        localStorage.setItem(key, value);
+window.App.setAuthToken = function(token) {
+    if (token) {
+        localStorage.setItem('authToken', token);
     }
 };
 
-// --- Helper to remove JWT from Local Storage (reusable) ---
-window.App.removeItem = function(key) {
-    // Check if key is valid
-    if (key) {
-        localStorage.removeItem(key);
-    }
-    // Optionally clear all auth-related items
+window.App.removeAuthToken = function() {
     localStorage.removeItem('authToken');
-    // Clear user-related items
     localStorage.removeItem('loggedInUsername');
-    // Clear role-related items
+    localStorage.removeItem('loggedInUserEmail');
     localStorage.removeItem('loggedInUserRole');
 };
 
-// --- Function to handle user logout (reusable) ---
-window.App.handleLogout = function() {
-    window.App.removeAuthToken(); // Use App.removeAuthToken
-    window.location.href = 'index.html'; // Always redirect to home page after logout
+// --- Parse JWT Token ---
+window.App.parseJwt = function(token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    } catch (e) {
+        console.error('Error parsing JWT:', e);
+        return null;
+    }
 };
 
-// --- Function to check authentication status and update GLOBAL UI (header) ---
+// --- Handle User Logout ---
+window.App.handleLogout = function() {
+    window.App.removeAuthToken();
+    window.location.href = 'index.html';
+};
+
+// --- Check Authentication Status and Update Header UI ---
 window.App.checkAuthStatusHeader = function() {
-    // Global header UI elements
     const showRegisterFormBtn = document.getElementById('showRegisterFormBtn');
-    // Re-select here to ensure it's found
     const showLoginFormBtn = document.getElementById('showLoginFormBtn');
-    // Re-select here to ensure it's found
     const logoutBtn = document.getElementById('logoutBtn');
-    // Re-select here to ensure it's found
     const loggedInUserSpan = document.getElementById('loggedInUser');
 
-    // Get auth token, username, and role from Local Storage
-    const token = window.App.getAuthToken(); // Use App.getAuthToken
-    // Re-select here to ensure it's found
+    const token = window.App.getAuthToken();
     const username = localStorage.getItem('loggedInUsername');
-    // Re-select here to ensure it's found
     const role = localStorage.getItem('loggedInUserRole');
 
-    // Update UI based on auth status
     if (token && username && role) {
         // User is logged in
         if (showRegisterFormBtn) showRegisterFormBtn.style.display = 'none';
-        // Re-select here to ensure it's found
         if (showLoginFormBtn) showLoginFormBtn.style.display = 'none';
-        // Re-select here to ensure it's found
         if (logoutBtn) logoutBtn.style.display = 'inline-block';
-        // Re-select here to ensure it's found
         if (loggedInUserSpan) {
-            loggedInUserSpan.textContent = `Logged in as: ${username} (${role})`;
+            loggedInUserSpan.textContent = `${username} (${role})`;
             loggedInUserSpan.style.display = 'inline-block';
         }
-        // Optionally, you can add role-based UI changes here
     } else {
+        // User is not logged in
         if (showRegisterFormBtn) showRegisterFormBtn.style.display = 'inline-block';
         if (showLoginFormBtn) showLoginFormBtn.style.display = 'inline-block';
         if (logoutBtn) logoutBtn.style.display = 'none';
@@ -104,18 +92,67 @@ window.App.checkAuthStatusHeader = function() {
     }
 };
 
-// Attach event listeners for common elements on DOMContentLoaded
+// --- Loading Spinner Helper ---
+window.App.showLoading = function(element) {
+    if (!element) return;
+    element.innerHTML = '<div class="loading-spinner"></div>';
+};
+
+window.App.hideLoading = function(element) {
+    if (!element) return;
+    element.innerHTML = '';
+};
+
+// --- Toast Notification System ---
+window.App.showToast = function(message, type = 'info', duration = 3000) {
+    const toastContainer = document.getElementById('toast-container') || createToastContainer();
+    
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type} toast-enter`;
+    toast.innerHTML = `
+        <div class="toast-content">
+            <span class="toast-icon">${getToastIcon(type)}</span>
+            <span class="toast-message">${message}</span>
+        </div>
+    `;
+    
+    toastContainer.appendChild(toast);
+    
+    setTimeout(() => toast.classList.add('toast-show'), 10);
+    
+    setTimeout(() => {
+        toast.classList.remove('toast-show');
+        toast.classList.add('toast-exit');
+        setTimeout(() => toast.remove(), 300);
+    }, duration);
+};
+
+function createToastContainer() {
+    const container = document.createElement('div');
+    container.id = 'toast-container';
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+    return container;
+}
+
+function getToastIcon(type) {
+    const icons = {
+        success: '✓',
+        error: '✕',
+        warning: '⚠',
+        info: 'ℹ'
+    };
+    return icons[type] || icons.info;
+}
+
+// --- Initialize on DOM Load ---
 document.addEventListener('DOMContentLoaded', () => {
-
-    // Check auth status and update header UI
     window.App.checkAuthStatusHeader();
-
-    // Attach logout event listener
+    
     const logoutBtn = document.getElementById('logoutBtn');
-
-    // Re-select here to ensure it's found
     if (logoutBtn) {
-        // Attach click event listener
         logoutBtn.addEventListener('click', window.App.handleLogout);
     }
 });
+
+// server.js
