@@ -1,0 +1,404 @@
+/* public/css/animations.css - Smooth Transitions & Micro-interactions */
+
+/* ==================== FADE IN ANIMATIONS ==================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ==================== SCALE ANIMATIONS ==================== */
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* ==================== LOADING SPINNER ==================== */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-top-color: #E50914;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 20px auto;
+}
+
+/* ==================== SKELETON LOADING ==================== */
+@keyframes shimmer {
+    0% {
+        background-position: -1000px 0;
+    }
+    100% {
+        background-position: 1000px 0;
+    }
+}
+
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        #1F1F1F 0%,
+        #2F2F2F 50%,
+        #1F1F1F 100%
+    );
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite;
+}
+
+.skeleton-card {
+    width: 100%;
+    height: 300px;
+    border-radius: 8px;
+}
+
+/* ==================== APPLY ANIMATIONS TO ELEMENTS ==================== */
+
+/* Header fade in on load */
+.main-header {
+    animation: fadeInDown 0.6s ease-out;
+}
+
+/* Hero section */
+.hero-content {
+    animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+.hero-title {
+    animation: fadeInUp 0.8s ease-out 0.3s both;
+}
+
+.hero-subtitle {
+    animation: fadeInUp 0.8s ease-out 0.4s both;
+}
+
+.hero-cta {
+    animation: fadeInUp 0.8s ease-out 0.5s both;
+}
+
+/* Movie cards stagger animation */
+.movie-card {
+    animation: fadeIn 0.5s ease-out both;
+}
+
+.movie-card:nth-child(1) { animation-delay: 0.1s; }
+.movie-card:nth-child(2) { animation-delay: 0.15s; }
+.movie-card:nth-child(3) { animation-delay: 0.2s; }
+.movie-card:nth-child(4) { animation-delay: 0.25s; }
+.movie-card:nth-child(5) { animation-delay: 0.3s; }
+.movie-card:nth-child(6) { animation-delay: 0.35s; }
+.movie-card:nth-child(7) { animation-delay: 0.4s; }
+.movie-card:nth-child(8) { animation-delay: 0.45s; }
+
+/* Modal animations */
+.modal.active .modal-overlay {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal.active .modal-content {
+    animation: scaleIn 0.3s ease-out;
+}
+
+/* Stats bar animation */
+.stats-bar {
+    animation: fadeIn 0.6s ease-out;
+}
+
+.stat-item {
+    animation: fadeInUp 0.6s ease-out both;
+}
+
+.stat-item:nth-child(1) { animation-delay: 0.1s; }
+.stat-item:nth-child(2) { animation-delay: 0.2s; }
+.stat-item:nth-child(3) { animation-delay: 0.3s; }
+
+/* Controls bar */
+.controls-bar {
+    animation: fadeIn 0.6s ease-out 0.2s both;
+}
+
+/* Section titles */
+.section-title {
+    animation: fadeInLeft 0.6s ease-out;
+}
+
+/* Empty state */
+.empty-state {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.empty-icon {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* ==================== HOVER EFFECTS ==================== */
+
+/* Button hover glow */
+.btn-primary,
+.btn-hero {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary::before,
+.btn-hero::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-primary:hover::before,
+.btn-hero:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* Movie card hover effect */
+.movie-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.movie-card:hover {
+    transform: scale(1.08) translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    z-index: 10;
+}
+
+.movie-card:hover .movie-info {
+    background: linear-gradient(to top, #1F1F1F 0%, transparent 100%);
+}
+
+/* Nav link underline effect */
+.nav-link {
+    position: relative;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #E50914;
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+/* Input focus glow */
+.form-input:focus,
+.search-input:focus {
+    box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.3);
+}
+
+/* ==================== LOADING STATES ==================== */
+
+/* Fade out when loading */
+.loading {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+/* Button loading state */
+.btn-primary.loading,
+.btn-hero.loading {
+    position: relative;
+    color: transparent;
+}
+
+.btn-primary.loading::after,
+.btn-hero.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+/* ==================== SUCCESS/ERROR MESSAGES ==================== */
+
+/* Message slide in */
+.form-message {
+    animation: slideInDown 0.4s ease-out;
+}
+
+/* Success check animation */
+@keyframes checkmark {
+    0% {
+        stroke-dashoffset: 100;
+    }
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* ==================== SCROLL ANIMATIONS ==================== */
+
+/* Fade in elements on scroll */
+.fade-in-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.fade-in-on-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ==================== MOBILE OPTIMIZATIONS ==================== */
+
+@media (max-width: 768px) {
+    /* Reduce animation complexity on mobile for performance */
+    .movie-card {
+        animation-duration: 0.3s;
+    }
+    
+    .movie-card:nth-child(n) {
+        animation-delay: 0s;
+    }
+    
+    .movie-card:hover {
+        transform: scale(1.03) translateY(-3px);
+    }
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ==================== UTILITY ANIMATIONS ==================== */
+
+.animate-fadeIn {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.animate-fadeInUp {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.animate-scaleIn {
+    animation: scaleIn 0.3s ease-out;
+}
+
+.animate-slideInRight {
+    animation: slideInRight 0.5s ease-out;
+}
+
+.animate-slideInLeft {
+    animation: slideInLeft 0.5s ease-out;
+}
+
+.flex-column-gap {
+    display: flex;
+    flex-direction: column; 
+    gap: 15px;
+}
+.flex-column-gap-lg {
+    display: flex;
+    flex-direction: column; 
+    gap: 25px;
+}
+
+.flex-column-gap-xl {
+    display: flex;
+    flex-direction: column; 
+    gap: 35px;
+}
+
