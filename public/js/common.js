@@ -3,7 +3,7 @@
 window.App = window.App || {};
 
 // --- API Base URL ---
-window.App.API_BASE = 'http://localhost:3000'; // Change to production URL when deploying
+window.App.API_BASE = 'http://localhost:3000'; // Change to production URL when deployed
 
 // --- Helper for UI Messages (reusable) ---
 window.App.displayMessage = function(element, message, type) {
@@ -11,7 +11,6 @@ window.App.displayMessage = function(element, message, type) {
     element.textContent = message;
     element.className = `message ${type}`;
     element.style.display = 'block';
-    
     setTimeout(() => {
         if (element) {
             element.style.display = 'none';
@@ -21,7 +20,7 @@ window.App.displayMessage = function(element, message, type) {
     }, 5000);
 };
 
-// --- JWT Token Management ---
+// --- Authentication Token Helpers ---
 window.App.getAuthToken = function() {
     return localStorage.getItem('authToken');
 };
@@ -39,18 +38,30 @@ window.App.removeAuthToken = function() {
     localStorage.removeItem('loggedInUserRole');
 };
 
-// --- Parse JWT Token ---
+// --- JWT Parser Helper ---
 window.App.parseJwt = function(token) {
     try {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-        return JSON.parse(jsonPayload);
+        return JSON.parse(atob(token.split('.')[1]));
     } catch (e) {
-        console.error('Error parsing JWT:', e);
+        console.error('Failed to parse JWT:', e);
         return null;
+    }
+};
+
+// --- Generic localStorage Helpers ---
+window.App.getItem = function(key) {
+    return localStorage.getItem(key);
+};
+
+window.App.setItem = function(key, value) {
+    if (key && value) {
+        localStorage.setItem(key, value);
+    }
+};
+
+window.App.removeItem = function(key) {
+    if (key) {
+        localStorage.removeItem(key);
     }
 };
 
@@ -92,67 +103,13 @@ window.App.checkAuthStatusHeader = function() {
     }
 };
 
-// --- Loading Spinner Helper ---
-window.App.showLoading = function(element) {
-    if (!element) return;
-    element.innerHTML = '<div class="loading-spinner"></div>';
-};
-
-window.App.hideLoading = function(element) {
-    if (!element) return;
-    element.innerHTML = '';
-};
-
-// --- Toast Notification System ---
-window.App.showToast = function(message, type = 'info', duration = 3000) {
-    const toastContainer = document.getElementById('toast-container') || createToastContainer();
-    
-    const toast = document.createElement('div');
-    toast.className = `toast toast-${type} toast-enter`;
-    toast.innerHTML = `
-        <div class="toast-content">
-            <span class="toast-icon">${getToastIcon(type)}</span>
-            <span class="toast-message">${message}</span>
-        </div>
-    `;
-    
-    toastContainer.appendChild(toast);
-    
-    setTimeout(() => toast.classList.add('toast-show'), 10);
-    
-    setTimeout(() => {
-        toast.classList.remove('toast-show');
-        toast.classList.add('toast-exit');
-        setTimeout(() => toast.remove(), 300);
-    }, duration);
-};
-
-function createToastContainer() {
-    const container = document.createElement('div');
-    container.id = 'toast-container';
-    container.className = 'toast-container';
-    document.body.appendChild(container);
-    return container;
-}
-
-function getToastIcon(type) {
-    const icons = {
-        success: '✓',
-        error: '✕',
-        warning: '⚠',
-        info: 'ℹ'
-    };
-    return icons[type] || icons.info;
-}
-
-// --- Initialize on DOM Load ---
+// --- Initialize on Page Load ---
 document.addEventListener('DOMContentLoaded', () => {
     window.App.checkAuthStatusHeader();
-    
+
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', window.App.handleLogout);
     }
 });
 
-// server.js

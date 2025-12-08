@@ -3,77 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Movie Collection</title>
+    <title>MovieVault - Your Personal Movie Collection</title>
     <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/layout.css">
-    <link rel="stylesheet" href="css/components.css">
-    <link rel="stylesheet" href="css/forms.css">
-    <link rel="stylesheet" href="css/media-queries.css">
+    <link rel="stylesheet" href="css/netflix-style.css">
+    <link rel="stylesheet" href="css/animations.css">
 </head>
 <body>
-    <header>
-        <nav>
-            <div class="logo">MovieVault</div>
-            <div class="nav-links">
-                <a href="index.html">Home</a>
-                <a href="about.html">About</a>
-                <a href="auth.html?form=register" id="showRegisterFormBtn" style="display: none;">Register</a>
-                <a href="auth.html?form=login" id="showLoginFormBtn" style="display: none;">Login</a>
-                <span id="loggedInUser" style="display: none;"></span>
-                <button id="logoutBtn" style="display: none;">Logout</button>
+    <!-- Navigation Header -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo">
+                <h1>MovieVault</h1>
             </div>
-        </nav>
+            <nav class="main-nav">
+                <a href="#" class="nav-link" id="homeLink">Home</a>
+                <a href="about.html" class="nav-link">About</a>
+            </nav>
+            <div class="auth-section">
+                <span id="userDisplay" class="user-display"></span>
+                <button id="loginBtn" class="btn-secondary">Sign In</button>
+                <button id="registerBtn" class="btn-primary">Get Started</button>
+                <button id="logoutBtn" class="btn-logout" style="display: none;">Sign Out</button>
+            </div>
+        </div>
     </header>
 
-    <main>
-        <section id="publicMoviesSection" style="display: none;">
-            <h2>Trending Movies</h2>
-            <p id="publicMoviesMessage" class="message"></p>
-            <div id="publicMovieList" class="movie-list-grid">
-                </div>
-        </section>
-
-        <section id="movieManagementSection" style="display: none;">
-            <h2>Add/Edit Movie</h2>
-            <p id="formMessage" class="message"></p>
-            <form id="movieForm">
-                <input type="hidden" id="movieId">
-                <input type="text" id="title" placeholder="Title" required>
-                <input type="text" id="director" placeholder="Director" required>
-                <input type="number" id="year" placeholder="Year" required>
-                <button type="submit" id="submitButton" class="auth-btn">Add Movie</button>
-            </form>
-        </section>
-        
-        <section id="movieListingSection" style="display: none;">
-            <h2>My Movie Collection</h2>
-            <div class="controls">
-                <input type="text" id="searchInput" placeholder="Search by title or director">
-                <button id="searchButton" class="btn">Search</button>
-                <button id="clearSearchButton" class="btn">Clear</button>
-                <select id="sortBy">
-                    <option value="">Sort By</option>
-                    <option value="title">Title</option>
-                    <option value="director">Director</option>
-                    <option value="year">Year</option>
-                </select>
-                <select id="sortOrder">
-                    <option value="asc">Ascending</option>
-                    <option value="desc">Descending</option>
-                </select>
-                <button id="applySortButton" class="btn">Apply Sort</button>
+    <!-- Hero Section (for logged-out users) -->
+    <section id="heroSection" class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">Unlimited movies, TV shows, and more</h1>
+            <p class="hero-subtitle">Create your personal collection. Watch anywhere. Cancel anytime.</p>
+            <div class="hero-cta">
+                <button id="heroGetStartedBtn" class="btn-hero">Get Started</button>
             </div>
-            <p id="listMessage" class="message"></p>
-            <div id="movieList" class="movie-list-grid">
-                </div>
-        </section>
-    </main>
+        </div>
+    </section>
 
-    <footer>
-        <p>&copy; 2025 MovieVault. All rights reserved.</p>
+    <!-- Trending Movies Section (for logged-out users) -->
+    <section id="trendingSection" class="content-section" style="display: none;">
+        <div class="container">
+            <h2 class="section-title">Trending Now</h2>
+            <div id="trendingMovies" class="movie-grid"></div>
+        </div>
+    </section>
+
+    <!-- User Dashboard (for logged-in users) -->
+    <section id="dashboardSection" class="dashboard-section" style="display: none;">
+        <div class="container">
+            <!-- Quick Stats -->
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span class="stat-number" id="totalMovies">0</span>
+                    <span class="stat-label">Movies</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="recentlyAdded">0</span>
+                    <span class="stat-label">This Week</span>
+                </div>
+            </div>
+
+            <!-- Search and Filters -->
+            <div class="controls-bar">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Search your collection..." class="search-input">
+                    <button id="searchBtn" class="btn-icon">🔍</button>
+                </div>
+                <div class="filter-group">
+                    <select id="sortBy" class="filter-select">
+                        <option value="">Sort By</option>
+                        <option value="title">Title</option>
+                        <option value="director">Director</option>
+                        <option value="year">Year</option>
+                        <option value="dateAdded">Recently Added</option>
+                    </select>
+                    <select id="sortOrder" class="filter-select">
+                        <option value="asc">A-Z</option>
+                        <option value="desc">Z-A</option>
+                    </select>
+                    <button id="applySortBtn" class="btn-secondary">Apply</button>
+                </div>
+            </div>
+
+            <!-- My Collection -->
+            <div class="collection-header">
+                <h2 class="section-title">My Collection</h2>
+                <button id="addMovieBtn" class="btn-primary" style="display: none;">+ Add Movie</button>
+            </div>
+            <div id="myMovies" class="movie-grid"></div>
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <div class="empty-icon">🎬</div>
+                <h3>Your collection is empty</h3>
+                <p>Browse trending movies below and start building your collection!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <button class="modal-close" id="closeModal">&times;</button>
+            
+            <!-- Login Form -->
+            <div id="loginForm" class="auth-form">
+                <h2 class="form-title">Sign In</h2>
+                <div id="loginMessage" class="form-message"></div>
+                <form id="loginFormElement">
+                    <div class="form-group">
+                        <input type="email" id="loginEmail" placeholder="Email" required class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="loginPassword" placeholder="Password" required class="form-input">
+                    </div>
+                    <button type="submit" class="btn-primary btn-full">Sign In</button>
+                </form>
+                <p class="form-footer">
+                    New to MovieVault? <a href="#" id="showRegisterLink">Sign up now</a>
+                </p>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerForm" class="auth-form" style="display: none;">
+                <h2 class="form-title">Get Started</h2>
+                <div id="registerMessage" class="form-message"></div>
+                <form id="registerFormElement">
+                    <div class="form-group">
+                        <input type="text" id="registerUsername" placeholder="Username" required class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="registerEmail" placeholder="Email" required class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="registerPassword" placeholder="Password (min 6 characters)" required class="form-input">
+                    </div>
+                    <button type="submit" class="btn-primary btn-full">Create Account</button>
+                </form>
+                <p class="form-footer">
+                    Already have an account? <a href="#" id="showLoginLink">Sign in</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Movie Modal (for admins) -->
+    <div id="addMovieModal" class="modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <button class="modal-close" id="closeAddMovieModal">&times;</button>
+            <div class="auth-form">
+                <h2 class="form-title">Add New Movie</h2>
+                <div id="addMovieMessage" class="form-message"></div>
+                <form id="addMovieFormElement">
+                    <input type="hidden" id="movieId">
+                    <div class="form-group">
+                        <input type="text" id="movieTitle" placeholder="Movie Title" required class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="movieDirector" placeholder="Director" required class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <input type="number" id="movieYear" placeholder="Release Year" required class="form-input">
+                    </div>
+                    <button type="submit" class="btn-primary btn-full" id="submitMovieBtn">Add Movie</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer class="main-footer">
+        <p>&copy; 2025 MovieVault. Built with ❤️ for movie lovers.</p>
     </footer>
 
     <script src="js/common.js"></script>
-    <script src="js/index.js"></script>
+    <script src="js/netflix-app.js"></script>
 </body>
 </html>
