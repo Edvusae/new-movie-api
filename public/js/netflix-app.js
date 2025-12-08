@@ -1,5 +1,3 @@
-// public/js/netflix-app.js - Main Application Logic
-
 // ==================== DOM ELEMENTS ====================
 let authModal, addMovieModal;
 let loginForm, registerForm, loginFormElement, registerFormElement;
