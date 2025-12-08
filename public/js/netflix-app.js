@@ -1,3 +1,5 @@
+// public/js/netflix-app.js - Main Application Logic
+
 // ==================== DOM ELEMENTS ====================
 let authModal, addMovieModal;
 let loginForm, registerForm, loginFormElement, registerFormElement;
@@ -326,26 +328,42 @@ function renderUserMovies(movies) {
     emptyState.style.display = 'none';
     const role = localStorage.getItem('loggedInUserRole');
     
-    myMovies.innerHTML = movies.map(movie => `
-        <div class="movie-card">
-            <div class="movie-poster skeleton-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 48px;">
-                🎬
-            </div>
-            <div class="movie-info">
-                <h3 class="movie-title">${movie.title}</h3>
-                <p class="movie-meta">Director: ${movie.director}</p>
-                <p class="movie-meta">Year: ${movie.year}</p>
-                <div class="movie-actions">
-                    ${role === 'admin' || role === 'super_admin' ? `
-                        <button class="btn-edit" onclick="editMovie('${movie._id}')">Edit</button>
-                    ` : ''}
-                    ${role === 'super_admin' ? `
-                        <button class="btn-delete" onclick="deleteMovie('${movie._id}')">Delete</button>
+    myMovies.innerHTML = movies.map((movie, index) => {
+        // Generate a unique color gradient for each movie
+        const gradients = [
+            'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+            'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+            'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+            'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
+            'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+            'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)'
+        ];
+        const gradient = gradients[index % gradients.length];
+        
+        return `
+            <div class="movie-card">
+                <div class="movie-poster" style="background: ${gradient}; height: 300px; display: flex; align-items: center; justify-content: center; color: white; font-size: 64px; font-weight: bold;">
+                    🎬
+                </div>
+                <div class="movie-info">
+                    <h3 class="movie-title" title="${movie.title}">${movie.title}</h3>
+                    <p class="movie-meta">📽️ ${movie.director}</p>
+                    <p class="movie-meta">📅 ${movie.year}</p>
+                    <p class="movie-meta" style="font-size: 11px; color: #666;">Added: ${new Date(movie.dateAdded).toLocaleDateString()}</p>
+                    ${(role === 'admin' || role === 'super_admin') ? `
+                        <div class="movie-actions">
+                            <button class="btn-edit" onclick="editMovie('${movie._id}', '${movie.title}', '${movie.director}', ${movie.year})">✏️ Edit</button>
+                            ${role === 'super_admin' ? `
+                                <button class="btn-delete" onclick="deleteMovie('${movie._id}', '${movie.title}')">🗑️ Delete</button>
+                            ` : ''}
+                        </div>
                     ` : ''}
                 </div>
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 function updateStats(movies) {
@@ -442,13 +460,23 @@ window.addToCollection = async function(title, year) {
 };
 
 // ==================== EDIT/DELETE MOVIES ====================
-window.editMovie = function(id) {
-    // TODO: Implement edit functionality
-    alert('Edit functionality coming soon!');
+window.editMovie = function(id, title, director, year) {
+    // Open the add movie modal in edit mode
+    openAddMovieModal();
+    
+    // Populate the form with existing data
+    document.getElementById('movieId').value = id;
+    document.getElementById('movieTitle').value = title;
+    document.getElementById('movieDirector').value = director;
+    document.getElementById('movieYear').value = year;
+    document.getElementById('submitMovieBtn').textContent = 'Update Movie';
+    
+    // Change form title
+    document.querySelector('#addMovieModal .form-title').textContent = 'Edit Movie';
 };
 
-window.deleteMovie = async function(id) {
-    if (!confirm('Are you sure you want to delete this movie?')) return;
+window.deleteMovie = async function(id, title) {
+    if (!confirm(`Are you sure you want to delete "${title}"?`)) return;
     
     const token = App.getAuthToken();
     try {
@@ -458,14 +486,24 @@ window.deleteMovie = async function(id) {
         });
         
         if (response.ok) {
-            alert('Movie deleted successfully!');
+            // Show success message
+            const successMsg = document.createElement('div');
+            successMsg.className = 'toast-success';
+            successMsg.textContent = `"${title}" deleted successfully!`;
+            successMsg.style.cssText = 'position: fixed; top: 100px; right: 20px; background: #46D369; color: white; padding: 15px 25px; border-radius: 8px; z-index: 9999; animation: slideInRight 0.3s ease-out;';
+            document.body.appendChild(successMsg);
+            
+            setTimeout(() => successMsg.remove(), 3000);
+            
+            // Refresh the collection
             fetchUserMovies();
         } else {
-            alert('Failed to delete movie');
+            const data = await response.json();
+            alert(data.message || 'Failed to delete movie');
         }
     } catch (error) {
         console.error('Error deleting movie:', error);
-        alert('Failed to delete movie');
+        alert('Failed to delete movie. Please try again.');
     }
 };
 
@@ -473,6 +511,8 @@ window.deleteMovie = async function(id) {
 async function handleAddMovie(e) {
     e.preventDefault();
     const token = App.getAuthToken();
+    const movieId = document.getElementById('movieId').value;
+    const isEditing = !!movieId;
     
     const movieData = {
         title: document.getElementById('movieTitle').value,
@@ -481,8 +521,14 @@ async function handleAddMovie(e) {
     };
     
     try {
-        const response = await fetch(`${App.API_BASE}/movies`, {
-            method: 'POST',
+        const url = isEditing 
+            ? `${App.API_BASE}/movies/${movieId}` 
+            : `${App.API_BASE}/movies`;
+        
+        const method = isEditing ? 'PUT' : 'POST';
+        
+        const response = await fetch(url, {
+            method: method,
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
@@ -493,17 +539,26 @@ async function handleAddMovie(e) {
         const data = await response.json();
         
         if (response.ok) {
-            showMessage(addMovieMessage, 'Movie added successfully!', 'success');
+            showMessage(addMovieMessage, 
+                isEditing ? 'Movie updated successfully!' : 'Movie added successfully!', 
+                'success'
+            );
             setTimeout(() => {
                 closeAddMovieModal();
                 fetchUserMovies();
+                // Reset form title back to default
+                document.querySelector('#addMovieModal .form-title').textContent = 'Add New Movie';
+                document.getElementById('submitMovieBtn').textContent = 'Add Movie';
             }, 1000);
         } else {
-            showMessage(addMovieMessage, data.message || 'Failed to add movie', 'error');
+            const errorMsg = data.errors 
+                ? data.errors.map(e => e.msg || Object.values(e)[0]).join(', ')
+                : data.message || 'Failed to save movie';
+            showMessage(addMovieMessage, errorMsg, 'error');
         }
     } catch (error) {
-        console.error('Error adding movie:', error);
-        showMessage(addMovieMessage, 'Network error', 'error');
+        console.error('Error saving movie:', error);
+        showMessage(addMovieMessage, 'Network error. Please try again.', 'error');
     }
 }
 
