@@ -11,8 +11,7 @@ let switchToLoginLink, switchToRegisterLink;
 // --- Function to toggle between login and register forms ---
 // This function is specific to auth.html, so it remains local to this file.
 function showAuthForm(formType) {
-    // Use App.displayMessage for any messages here if needed,
-    // though this function primarily controls form visibility.
+
     if (!authFormsSection || !registerForm || !loginForm) {
         console.error("Auth form elements not found. Cannot show form.");
         return;
