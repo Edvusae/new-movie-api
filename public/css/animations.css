@@ -1,5 +1,3 @@
-/* public/css/animations.css - Smooth Transitions & Micro-interactions */
-
 /* ==================== FADE IN ANIMATIONS ==================== */
 @keyframes fadeIn {
     from {
@@ -402,3 +400,8 @@
     gap: 35px;
 }
 
+.flex-row-gap {
+    display: flex;
+    flex-direction: row; 
+    gap: 15px;
+}
