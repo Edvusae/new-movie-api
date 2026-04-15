@@ -133,7 +133,8 @@ async function fetchAndDisplayMovies() {
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({ message: 'Unknown error from server.' }));
             if (response.status === 401 && token) {
-                App.handleLogout(); // Use App.handleLogout (redirects to index.html)
+                App.handleLogout(); 
+                // Use App.handleLogout (redirects to index.html)
                 App.displayMessage(listMessage, 'Session expired. Please log in again.', 'error'); // Use App.displayMessage
                 return;
             }
@@ -146,7 +147,8 @@ async function fetchAndDisplayMovies() {
             return;
         }
 
-        const userRole = localStorage.getItem('loggedInUserRole'); // This is fine as it's directly from localStorage
+        const userRole = localStorage.getItem('loggedInUserRole'); 
+        // This is fine as it's directly from localStorage
 
         movies.forEach(movie => {
             const movieCard = document.createElement('div');
@@ -181,7 +183,8 @@ async function fetchAndDisplayMovies() {
 
     } catch (error) {
         console.error('Error fetching and displaying movies:', error);
-        App.displayMessage(listMessage, `Failed to load movies: ${error.message}`, 'error'); // Use App.displayMessage
+        App.displayMessage(listMessage, `Failed to load movies: ${error.message}`, 'error');
+        // Use App.displayMessage
     }
 }
 
@@ -199,15 +202,18 @@ async function handleAddMovie(event) {
 
     const movieData = { title, director, year };
 
-    let url = `${App.API_BASE}/movies`; // Use App.API_BASE
+    let url = `${App.API_BASE}/movies`; 
+    // Use App.API_BASE
     let method = 'POST';
 
     if (id) {
-        url = `${App.API_BASE}/movies/${id}`; // Use App.API_BASE
+        url = `${App.API_BASE}/movies/${id}`; 
+        // Use App.API_BASE
         method = 'PUT';
     }
 
-    const token = App.getAuthToken(); // Use App.getAuthToken
+    const token = App.getAuthToken();
+    // Use App.getAuthToken
     if (!token) {
         App.displayMessage(formMessage, 'You must be logged in to add/update movies.', 'error'); // Use App.displayMessage
         window.location.href = 'auth.html?form=login';
@@ -228,7 +234,8 @@ async function handleAddMovie(event) {
 
         if (!response.ok) {
             if (response.status === 401) {
-                App.handleLogout(); // Use App.handleLogout
+                App.handleLogout();
+                // Use App.handleLogout
                 App.displayMessage(formMessage, 'Session expired or invalid. Please log in again.', 'error'); // Use App.displayMessage
                 return;
             }
@@ -242,13 +249,15 @@ async function handleAddMovie(event) {
                 const validationErrors = data.errors.map(err => err.msg || (typeof err === 'object' ? Object.values(err)[0] : 'Validation error')).join('\n- ');
                 errorMessage += `\n\nValidation Errors:\n- ${validationErrors}`;
             }
-            App.displayMessage(formMessage, errorMessage, 'error'); // Use App.displayMessage
+            App.displayMessage(formMessage, errorMessage, 'error');
+            // Use App.displayMessage
         } else {
             App.displayMessage(formMessage, id ? 'Movie updated successfully!' : 'Movie added successfully!', 'success'); // Use App.displayMessage
             movieForm.reset();
             movieIdInput.value = '';
             submitButton.textContent = 'Add Movie';
-            fetchAndDisplayMovies(); // Refresh the movie list
+            fetchAndDisplayMovies(); 
+            // Refresh the movie list
         }
 
     } catch (error) {
@@ -265,7 +274,8 @@ async function handleEdit(event) {
     formMessage.style.display = 'none';
 
     try {
-        const response = await fetch(`${App.API_BASE}/movies/${id}`); // Use App.API_BASE
+        const response = await fetch(`${App.API_BASE}/movies/${id}`); 
+        // Use App.API_BASE
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({ message: 'Unknown error.' }));
             throw new Error(`Failed to fetch movie for edit: ${errorData.message || response.statusText}`);
