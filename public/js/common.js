@@ -3,7 +3,8 @@
 window.App = window.App || {};
 
 // --- API Base URL ---
-window.App.API_BASE = 'http://localhost:3000'; // Change to production URL when deployed
+window.App.API_BASE = 'http://localhost:3000'; 
+// Change to production URL when deployed
 
 // --- Helper for UI Messages (reusable) ---
 window.App.displayMessage = function(element, message, type) {
@@ -19,7 +20,6 @@ window.App.displayMessage = function(element, message, type) {
         }
     }, 5000);
 };
-
 // --- Authentication Token Helpers ---
 window.App.getAuthToken = function() {
     return localStorage.getItem('authToken');
@@ -102,7 +102,6 @@ window.App.checkAuthStatusHeader = function() {
         }
     }
 };
-
 // --- Initialize on Page Load ---
 document.addEventListener('DOMContentLoaded', () => {
     window.App.checkAuthStatusHeader();
