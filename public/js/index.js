@@ -4,7 +4,6 @@
 // If common.js is not loaded first, this script will fail.
 // No direct 'import' or 'const { ... } = window;' needed at the top,
 // as we will directly use App.functionName throughout.
-
 // UI Elements specific to index.html
 // These are declared globally within this file, but assigned their DOM references
 // inside checkAuthStatusIndexPage, which runs on DOMContentLoaded.
@@ -23,7 +22,8 @@ async function fetchAndDisplayPublicMovies() {
     }
 
     publicMoviesMessage.style.display = 'none'; // Hide any previous messages
-    publicMovieListDiv.innerHTML = ''; // Clear existing movie cards
+    publicMovieListDiv.innerHTML = '';
+    // Clear existing movie cards
 
     try {
         const response = await fetch(`${App.API_BASE}/api/public/movies/trending`); // Use App.API_BASE
@@ -39,7 +39,8 @@ async function fetchAndDisplayPublicMovies() {
         }
 
         // Check if user is logged in using the common App helper
-        const isLoggedIn = !!App.getAuthToken(); // Use App.getAuthToken
+        const isLoggedIn = !!App.getAuthToken();
+        // Use App.getAuthToken
 
         movies.forEach(movie => {
             const movieCard = document.createElement('div');
@@ -93,15 +94,18 @@ async function fetchAndDisplayMovies() {
         return;
     }
 
-    listMessage.style.display = 'none'; // Hide previous messages
-    movieListDiv.innerHTML = ''; // Clear existing movie cards
+    listMessage.style.display = 'none'; 
+    // Hide previous messages
+    movieListDiv.innerHTML = '';
+    // Clear existing movie cards
 
     try {
         const searchTerm = searchInput.value.trim();
         const sortBy = sortBySelect.value;
         const sortOrder = sortOrderSelect.value;
 
-        let url = `${App.API_BASE}/movies`; // Use App.API_BASE
+        let url = `${App.API_BASE}/movies`;
+        // Use App.API_BASE
         const params = new URLSearchParams();
 
         if (searchTerm) {
@@ -118,7 +122,8 @@ async function fetchAndDisplayMovies() {
             url += `?${params.toString()}`;
         }
 
-        const token = App.getAuthToken(); // Use App.getAuthToken
+        const token = App.getAuthToken();
+        // Use App.getAuthToken
         const headers = {};
         if (token) {
             headers['Authorization'] = `Bearer ${token}`;
