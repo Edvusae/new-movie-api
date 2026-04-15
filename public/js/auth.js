@@ -206,17 +206,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (loginForm) {
         loginForm.addEventListener('submit', handleLogin);
     }
+    
     // Adding event listener for switch to login link
     if (switchToLoginLink) {
         switchToLoginLink.addEventListener('click', (e) => {
-            e.preventDefault(); // Prevent default link behavior
+            e.preventDefault(); 
+            // Prevent default link behavior
             showAuthForm('login');
         });
     }
     // Adding event listener for switch to register link
     if (switchToRegisterLink) {
         switchToRegisterLink.addEventListener('click', (e) => {
-            e.preventDefault(); // Prevent default link behavior
+            e.preventDefault(); 
+            // Prevent default link behavior
             showAuthForm('register');
         });
     }
